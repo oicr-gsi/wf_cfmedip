@@ -7,7 +7,7 @@ Having sudo privileges in the host system is required to build the image. During
 **Do not use sudo to execute `docker` commands**, instead, add an existing user to the _docker_ group: `sudo usermod -aG docker harrycallahan`; this grants the user permissions to execute the `docker` command (i.e. `harrycallahan@devmachine:/$ docker image ls`).
 
 To properly run a container, the user must pass its user and group IDs (in numeric format) to the `docker` command. As a consequence, the container will trigger processes in the host machine that belong to the user, making things like writing data to network shares possible:
-`docker run --rm -u $(id -u):$(id -g) -ti r-base`. The user does not exist in the container (`I have no name!`) but it will trigger processes using user IDs that are valid in the host.
+`docker run --rm -u $(id -u):$(id -g) -ti r-base`. This user does not exist in the container, and the command prompt shows `I have no name!`, but processes are triggered under the supplied UID nonetheless.
 
 ## Install & run
 Download repository:
