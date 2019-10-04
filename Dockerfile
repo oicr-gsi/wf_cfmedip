@@ -13,3 +13,10 @@ RUN apt-get update \
 
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2"))' \
 	R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg19"))'
+
+
+RUN mkdir /home/data \
+	&& mkdir /home/R
+
+COPY data/*.gz /home/data
+COPY R/*.R /home/R
