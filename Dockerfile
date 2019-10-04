@@ -20,3 +20,8 @@ RUN mkdir /home/data \
 
 COPY data/*.gz /home/data/
 COPY R/*.R /home/R/
+
+
+ENTRYPOINT ["Rscript /home/R/wf_main.R"]
+CMD [""]
+
