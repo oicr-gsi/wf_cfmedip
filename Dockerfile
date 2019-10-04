@@ -18,5 +18,5 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2"))' \
 RUN mkdir /home/data \
 	&& mkdir /home/R
 
-COPY data/*.gz /home/data
-COPY R/*.R /home/R
+COPY data/*.gz /home/data/
+COPY R/*.R /home/R/
