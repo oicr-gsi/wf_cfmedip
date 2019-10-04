@@ -1,7 +1,7 @@
 # wf-cfMeDIP
 Workflow for cfMeDIP data analysis using Docker
 
-# User configuration: READ ME FIRST!!! THIS IS IMPORTANT!!!
+## User configuration: READ ME FIRST!!! THIS IS IMPORTANT!!!
 Having sudo privileges in the host system is required to build the image. During this process, it is the conatiner's root user the one executing the Dockerfile commands (i.e. apt-get, configure environment variables, etc).
 
 **Do not use sudo to execute `docker` commands**, instead, add an existing user to the _docker_ group: `sudo usermod -aG docker harrycallahan`; this grants the user permissions to execute the `docker` command (i.e. `docker image ls`).
