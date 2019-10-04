@@ -15,7 +15,11 @@ Download repository (currently private repo, Github user and password will be re
 Build the image (can take more than an hour, requires sudo privileges in the host system): 
 `sudo docker build -t wf_cfmedip:latest wf-cfMeDIP/`
 
-Launch docker container:
+Launch docker container in bash mode:
 `docker run --rm -u $(id -u):$(id -g) -ti -v /host_folders/docker/:/home/docker/ wf_cfmedip:latest /bin/bash`
+
+## Running jobs
+The workflow is trigered by the script `wf_main.R` as follows:
+`docker run --rm -u $(id -u):$(id -g) -v /host_folders/docker/:/home/docker/ wf_cfmedip:latest Rscript /home/R/wf_main.R [params]`.
 
 
