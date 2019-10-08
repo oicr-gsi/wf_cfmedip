@@ -3,6 +3,7 @@ FROM r-base:3.6.1
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		curl \
+		gawk \
 		libxml2-dev \
 		libcurl4-openssl-dev \
 		libssl-dev \
