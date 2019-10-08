@@ -2,6 +2,7 @@ FROM r-base:3.6.1
     
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
+		curl \
 		libxml2-dev \
 		libcurl4-openssl-dev \
 		libssl-dev \
@@ -10,7 +11,7 @@ RUN apt-get update \
 		samtools \
 		trimmomatic
 
-RUN wget https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar -P /usr/bin/
+RUN curl -L -o /usr/bin/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar
 
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2"))' \
 	R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg19"))'
