@@ -1,6 +1,8 @@
 # wf-cfMeDIP
 Workflow for cfMeDIP data analysis using Docker
 
+![wf_cfmedip_overview](img/plot_wf_cfmedip_overview.png)
+
 ## User configuration: IMPORTANT!!! READ ME FIRST!!!
 
 **Do not use sudo to execute `docker` commands**, instead, add an existing user to the _docker_ group `sudo usermod -aG docker harrycallahan`, which grants this user permissions to execute the `docker` command (i.e. `docker image ls`, `docker run`, `docker build`, etc).
