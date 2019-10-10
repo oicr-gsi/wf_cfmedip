@@ -20,6 +20,8 @@ Build the image (can take more than an hour):
 `docker build -t wf_cfmedip:latest wf-cfMeDIP/`
 
 ## Basic container configuration
+
+![wf_cfmedip_folders](img/plot_wf_cfmedip_folders.png)
 When triggering the workflow, it is necessary to bind the folders containing 1) the short reads, 2) pre-built genomic index, and 3) working directory:
 `/home/docker/R/wf_main.R`, which gets triggered as the docker image spawns:
 `docker run --rm -u $(id -u):$(id -g) -v /host_folders/docker/:/home/docker/ albertojleon/wf_cfmedip:latest [script params]`.
