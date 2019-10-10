@@ -8,7 +8,7 @@ Workflow for cfMeDIP data analysis using Docker
 To execute `docker run [docker_image]` in a development server, the user must pass its user and group IDs (in numeric format) by using the following `docker` command: `docker run --rm -u $(id -u):$(id -g) -ti [docker_image]`. As a consequence, the container processes belong to a user that is known by the host, allowing things like reading and writing data located in network shares. This user does not exist in the container, and the command prompt shows `I have no name!`, but processes are triggered under the valid UID nonetheless.
 
 ## Download Docker image
-A pre-built image is hosted in Docker Hub (private repoitory, login required). First, execute `docker login`, and then `docker pull albertojleon/wf_cfmedip` to create a mirror image in the local registry.
+A pre-built image is hosted in Docker Hub (private repository, login required). First, execute `docker login`, and then `docker pull albertojleon/wf_cfmedip` to create a mirror image in the local registry.
 
 ## Build image
 Download repository (currently private repo, Github user and password will be requested):
