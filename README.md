@@ -12,7 +12,7 @@ To execute `docker run [docker_image]` in a development server, the user must pa
 ## Download pre-built image
 A pre-built Docker image is hosted in Docker Hub (private repository, login required). First, execute `docker login`, and then `docker pull albertojleon/wf_cfmedip` to create a mirror image in the local registry.
 
-## Build image
+## Build image locally
 Download repository (currently private repo, Github user and password will be requested):
 `git clone https://github.com/translational-genomics-laboratory/wf-cfMeDIP.git`
 
