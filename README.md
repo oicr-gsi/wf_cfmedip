@@ -16,6 +16,8 @@ A pre-built Docker image is hosted in Docker Hub (private repository, login requ
 Download repository (currently private repo, Github user and password will be requested):
 `git clone https://github.com/translational-genomics-laboratory/wf-cfMeDIP.git`
 
+At this point, changes can be made to the `Dockerfile` or to the `wf_main.R` script.
+
 Build the image (can take more than an hour): 
 `docker build -t wf_cfmedip:latest wf-cfMeDIP/`
 
