@@ -32,10 +32,12 @@ if (is.null(opt$index)){
 }
 
 fname<-system(paste0("basename ",opt," | sed 's/.R1.*//'"),intern=TRUE)
-bt2.index<-opt$index
+index<-opt$index
+
+aligner<-"gsnap"
 
 #step 0: create directories
-dirs<-c("1_trim","2_align_qc","3_preprocess","4_picard","5_consensuscruncher","6_medips")
+dirs<-c("1_trim","2_align","3_preprocess","4_picard","5_consensuscruncher","6_medips")
 sapply(dirs,function(x) system(paste0("mkdir -p ",x)))
 
 
@@ -49,18 +51,33 @@ if(!is.null(opt$crop)){
 }
 
 #step 2: alignment
-cmd<-paste0("bowtie2 -p 8 -x ",bt2.index," -1 1_trim/",fname,".R1.fq.gz -2 1_trim/",fname,".R2.fq.gz -S 2_align_qc/",fname,".sam")
-system(cmd)
+if(aligner=="bowtie2"){
+  cmd.align<-paste0("bowtie2 -p 8 -x ",index," -1 1_trim/",fname,".R1.fq.gz -2 1_trim/",fname,".R2.fq.gz -S 2_align/",fname,".bowtie2.sam")
+  
+}
+if(aligner=="gsnap"){
+  cmd.align<-paste0("gsnap -D $pwd -d ",index," -t 8 -m 0.99 -A sam --gunzip --trim-mismatch-score=0 1_trim/",fname,".R1.fastq.gz 1_trim/",fname,".R2.fastq.gz > 2_align/",fname,".gsnap.sam")
+}
+system(cmd.align)
+
 
 #step 3: preprocessing
 #samtools view -b (output bam) -F12 (remove unpaired reads)
-cmd<-paste0("samtools view -b -F12 2_align_qc/",fname,".sam | samtools sort -o 3_preprocess/",fname,".sorted.bam")
+cmd<-paste0("samtools view -b 2_align/",fname,".",aligner,".sam | samtools sort -o 3_preprocess/",fname,".",aligner,".sorted.bam")
 system(cmd)
 
 
-cmd<-paste0("java -jar /usr/bin/picard.jar MarkDuplicates -I 3_preprocess/",fname,".sorted.bam -O 3_preprocess/",
-            fname,".sorted.dedup.bam"," -M 3_preprocess/",fname,".sorted.dedup.metrics -ASSUME_SORTED true -VALIDATION_STRINGENCY SILENT -REMOVE_DUPLICATES true")
+cmd<-paste0("java -jar /usr/bin/picard.jar MarkDuplicates I=3_preprocess/",fname,".",aligner,".sorted.bam O=3_preprocess/",
+            fname,".",aligner,".sorted.dedup.bam"," M=3_preprocess/",fname,".",aligner,".sorted.dedup.metrics ASSUME_SORTED=true VALIDATION_STRINGENCY=SILENT REMOVE_DUPLICATES=true")
 system(cmd)
+
+
+
+cmd<-paste0("samtools view 3_preprocess/",fname,".",aligner,".sorted.dedup.bam | awk '$7 == \"=\"' | awk 'sqrt($9*$9)>119 && sqrt($9*$9)<1000' | sed -r '/(.*\\/){10}/d' | awk '{print $1}' > 3_preprocess/",fname,".",aligner,".mapped_proper_pair.txt")
+cat(cmd)
+
+
+cmd<-paste0("java -jar /usr/bin/picard.jar FilterSamReads I=3_preprocess/",fname,".",aligner,".sorted.dedup.bam O=3_preprocess/",fname,".",aligner,".sorted.dedup.filtered.bam READ_LIST_FILe=3_preprocess/",fname,".",aligner,".mapped_proper_pair.txt FILTER=includeReadList")
 
 
 
@@ -88,8 +105,8 @@ paired=TRUE
 chr.select=paste0("chr",c(1:22,"X","Y"))
 for(ws in list.ws){
   message("MEDIPS: ",fname,".ws",ws,".txt")
-  MeDIP.set = MEDIPS.createSet(file = paste0("3_preprocess","/",fname,".sorted.dedup.bam"),BSgenome = BSgenome, extend = extend, shift = shift, paired=paired, uniq = uniq, window_size = ws,chr.select=chr.select)
-  write.table(data.frame(MeDIP.set@genome_count),paste0("6_medips/",fname,".ws",ws,".txt"),row.names=F,quote=F,col.names=F)
+  MeDIP.set = MEDIPS.createSet(file = paste0("3_preprocess","/",fname,".",aligner,".sorted.dedup.filtered.bam"),BSgenome = BSgenome, extend = extend, shift = shift, paired=paired, uniq = uniq, window_size = ws,chr.select=chr.select)
+  write.table(data.frame(MeDIP.set@genome_count),paste0("6_medips/",fname,".",aligner,".ws",ws,".txt"),row.names=F,quote=F,col.names=F)
 }
 
 
