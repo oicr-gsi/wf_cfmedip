@@ -28,9 +28,19 @@ RUN cd /home \
 	&& wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 \
 	&& tar -xvjf samtools-1.9.tar.bz2 \
 	&& cd samtools-1.9 \
-	&& make && make install
+	&& make && make install \
 	&& cd .. \
 	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
 	
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg19"))'
+	
+	RUN mkdir /home/data \
+	&& mkdir /home/R
+
+COPY data/*.gz /home/data/
+COPY R/*.R /home/R/
+
+ENTRYPOINT ["Rscript /home/R/wf_main.R"]
+CMD [""]
+
