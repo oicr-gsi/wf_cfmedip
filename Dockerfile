@@ -32,20 +32,5 @@ RUN cd /home \
 	&& cd .. \
 	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
 	
-	
-
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg19"))'
-
-
-RUN mkdir /home/data \
-	&& mkdir /home/R
-
-COPY data/*.gz /home/data/
-COPY R/*.R /home/R/
-
-
-ENTRYPOINT ["Rscript /home/R/wf_main.R"]
-CMD [""]
-
-
