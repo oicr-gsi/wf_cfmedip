@@ -34,7 +34,7 @@ RUN cd /home \
 	
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2,devtools"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg19"))' \
-	&& R -e 'install_github("jxu1234/MeDEStrand")'
+	&& R -e 'install_github("devtools::jxu1234/MeDEStrand")'
 	
 	RUN mkdir /home/data \
 	&& mkdir /home/R
