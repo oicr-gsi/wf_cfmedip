@@ -13,6 +13,8 @@ RUN apt-get update \
 		trimmomatic
 
 RUN curl -L -o /usr/bin/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar
+RUN curl -L -o /usr/bin/cromwell.jar https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar
+RUN curl -L -o /usr/bin/womtool.jar https://github.com/broadinstitute/cromwell/releases/download/47/womtool-47.jar
 
 RUN cd /home \
 	&& wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2019-09-12.tar.gz \
