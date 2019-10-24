@@ -9,8 +9,7 @@ RUN apt-get update \
 		libcurl4-openssl-dev \
 		libssl-dev \
 		default-jre \
-		bowtie2 \
-		trimmomatic
+		bowtie2
 
 RUN curl -L -o /usr/bin/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar
 RUN curl -L -o /usr/bin/cromwell.jar https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar
@@ -36,7 +35,10 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2,devtools"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg19"))' \
 	&& R -e 'install_github("devtools::jxu1234/MeDEStrand")'
 	
-	RUN mkdir /home/data \
+RUN apt-get install -y --no-install-recommends python3-pip \
+	&& pip3 install UMI-tools
+	
+RUN mkdir /home/data \
 	&& mkdir /home/R
 
 COPY data/*.gz /home/data/
