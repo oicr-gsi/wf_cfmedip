@@ -31,10 +31,12 @@ RUN cd /home \
 	&& cd .. \
 	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
 	
-RUN R -e 'install.packages(c("BiocManager","optparse","reshape2,devtools"))' \
+RUN R -e 'install.packages(c("BiocManager","optparse","reshape2,devtools","gsubfn"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg38"))' \
 	&& R -e 'devtools::install_github("jxu1234/MeDEStrand")'
-	
+
+
+
 RUN apt-get install -y --no-install-recommends python3-pip \
 	&& pip3 install UMI-tools
 	
