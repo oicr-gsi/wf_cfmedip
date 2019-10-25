@@ -1,6 +1,7 @@
 FROM r-base:3.6.1
     
 RUN apt-get update \
+	&& apt-get upgrade \
 	&& apt-get install -y --no-install-recommends \
 		curl \
 		nano \
@@ -33,9 +34,7 @@ RUN cd /home \
 	
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsubfn"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg38"))' \
-	&& R -e 'devtools::install_github("jxu1234/MeDEStrand")'
-
-
+	&& R -e 'library(devtools);devtools::install_github("jxu1234/MeDEStrand")'
 
 RUN apt-get install -y --no-install-recommends \
 	python3-pip \
