@@ -37,7 +37,9 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsu
 
 
 
-RUN apt-get install -y --no-install-recommends python3-pip \
+RUN apt-get install -y --no-install-recommends \
+	python3-pip \
+	python3-setuptools \
 	&& pip3 install UMI-tools
 	
 RUN mkdir /home/data \
