@@ -36,9 +36,7 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsu
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg38"))' \
 	&& R -e 'library(devtools);devtools::install_github("jxu1234/MeDEStrand")'
 
-RUN apt-get install -y --no-install-recommends \
-	python3-pip \
-	python3-setuptools \
+RUN apt-get install -y python3-pip \
 	&& pip3 install UMI-tools
 	
 RUN mkdir /home/data \
