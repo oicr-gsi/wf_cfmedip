@@ -13,8 +13,8 @@ RUN apt-get update \
 		default-jre \
 		bowtie2
 
-RUN curl -L -o /usr/lib/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar
-	&& curl -L -o /usr/lib/cromwell.jar https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar
+RUN curl -L -o /usr/lib/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar \
+	&& curl -L -o /usr/lib/cromwell.jar https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar \
 	&& curl -L -o /usr/lib/womtool.jar https://github.com/broadinstitute/cromwell/releases/download/47/womtool-47.jar
 
 RUN cd /home \
