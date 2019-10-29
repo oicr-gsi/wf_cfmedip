@@ -25,6 +25,16 @@ RUN cd /home \
 	&& rm -rf /home/gmap-2019-09-12 && rm /home/gmap-gsnap-2019-09-12.tar.gz
 	
 RUN cd /home \
+	&& wget https://github.com/lh3/bwa/releases/download/v0.7.17/bwa-0.7.17.tar.bz2 \
+	&& tar -xvjf bwa-0.7.17.tar.bz2 \
+	&& cd bwa-0.7.17 \
+	&& make \
+	&& cd .. \
+	&& mv /home/bwa-0.7.17 /usr/lib/ && rm bwa-0.7.17.tar.bz2 \
+	&& PATH=$PATH:/usr/lib/bwa-0.7.17 \
+	&& export PATH
+	
+RUN cd /home \
 	&& wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 \
 	&& tar -xvjf samtools-1.9.tar.bz2 \
 	&& cd samtools-1.9 \
@@ -39,12 +49,4 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsu
 RUN apt-get install -y python3-pip \
 	&& pip3 install UMI-tools
 	
-RUN mkdir /home/data \
-	&& mkdir /home/R
-
-COPY data/*.gz /home/data/
-COPY R/*.R /home/R/
-
-ENTRYPOINT ["Rscript /home/R/wf_main.R"]
-CMD [""]
 
