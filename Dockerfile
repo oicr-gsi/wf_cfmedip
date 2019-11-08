@@ -42,7 +42,7 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsu
 	&& R -e 'library(devtools);devtools::install_github("jxu1234/MeDEStrand")'
 
 RUN apt-get install -y python3-pip \
-	&& pip3 install UMI-tools
+	&& pip3 install UMI-tools #Flag '--no-install-recommends' no good for python as it skips installation of required libraries
 
 RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" > /etc/profile.d/custom_paths.sh #ensures paths in cluster?
 	
