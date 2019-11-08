@@ -104,7 +104,6 @@ MeDIP_seq = MeDEStrand.createSet(file=paste0(opt$inputDir,"/",opt$bamFile), BSge
 CS = MeDEStrand.countCG(pattern="CG", refObj=MeDIP_seq)
 
 # Infer genome-wide absolute methylation levels:
-#result.methylation = MeDEStrand.binMethyl(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
 result.methylation = MeDEStrand.binMethyl_hg38(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
 
 # Create a dataframe from the previous GRanges object.
