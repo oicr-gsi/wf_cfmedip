@@ -10,11 +10,11 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list,description=msg.description,usage = msg.usage);
 opt = parse_args(opt_parser);
 
-if (is.null(opt$bamFile) | is.null(opt$outputDir | is.null(opt$windowSize))){
+if (is.null(opt$bamFile) | is.null(opt$outputDir) | is.null(opt$windowSize)){
   print_help(opt_parser)
   stop("ERROR: parameters --bamFile, --outputDir and --windowSize must be provided", call.=FALSE)
 }
-if (!file.exists(paste0(opt$inputDir,"/",opt$bamFile))){
+if (!file.exists(opt$bamFile)){
   print_help(opt_parser)
   stop(paste0("ERROR: bam file not found ",opt$bamFile), call.=FALSE)
 }
@@ -104,6 +104,7 @@ MeDIP_seq = MeDEStrand.createSet(file=paste0(opt$inputDir,"/",opt$bamFile), BSge
 CS = MeDEStrand.countCG(pattern="CG", refObj=MeDIP_seq)
 
 # Infer genome-wide absolute methylation levels:
+#result.methylation = MeDEStrand.binMethyl(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
 result.methylation = MeDEStrand.binMethyl_hg38(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
 
 # Create a dataframe from the previous GRanges object.
