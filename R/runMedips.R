@@ -35,7 +35,7 @@ chr.select=paste0("chr",c(1:22,"X","Y"))
 
 message("MEDIPS: ws:",ws,".txt")
 MeDIP.set = MEDIPS.createSet(file = opt$bamFile,BSgenome = BSgenome, extend = extend, shift = shift, paired=paired, uniq = uniq, window_size = ws,chr.select=chr.select)
-write.table(data.frame(MeDIP.set@genome_count),paste0(opt$outputDir,"/MEDIPS_hg38_ws",ws,"_count.txt"),row.names=F,quote=F,col.names=F)
+
 
 #coupling set: maps CG densities across the genome
 CS=MEDIPS.couplingVector(pattern="CG", refObj=MeDIP.set)
@@ -43,7 +43,17 @@ CS=MEDIPS.couplingVector(pattern="CG", refObj=MeDIP.set)
 #####MEDIPS.set(MeDIP=true,...) performs CpG density normalization (rms: relative methylation score)
 MEDIPS.set.rms=MEDIPS.meth(MSet1 = MeDIP.set, CSet = CS,MeDIP=TRUE)[paste0(gsub("-",".",basename(opt$bamFile)),".rms")]
 
-write.table(MEDIPS.set.rms,paste0(opt$outputDir,"/MEDIPS_hg38_ws",ws,"_rms.txt"),row.names=F,quote=F,col.names=F)
+fname<-unlist(strsplit(basename(opt$bamFile),split="\\."))[1]
+
+if(!dir.exists(paste0(opt$outputDir,"/gw"))){dir.create(paste0(opt$outputDir,"/gw"))}
+write.table(data.frame(MeDIP.set@genome_count),paste0(opt$outputDir,"/gw/MEDIPS_hg38_",fname,"_ws",ws,"_count.txt"),row.names=F,quote=F,col.names=F)
+write.table(MEDIPS.set.rms,paste0(opt$outputDir,"/gw/MEDIPS_hg38_",fname,"_ws",ws,"_rms.txt"),row.names=F,quote=F,col.names=F)
+
+
+
+
+
+
 
 
 

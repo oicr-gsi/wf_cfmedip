@@ -98,7 +98,7 @@ shift = 0
 chr.select = paste0('chr', c(1:22) )
 
 # Create a MeDIP set
-MeDIP_seq = MeDEStrand.createSet(file=paste0(opt$inputDir,"/",opt$bamFile), BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, window_size=ws, chr.select=chr.select, paired=paired)
+MeDIP_seq = MeDEStrand.createSet(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, window_size=ws, chr.select=chr.select, paired=paired)
 
 #  Count CpG pattern in the bins
 CS = MeDEStrand.countCG(pattern="CG", refObj=MeDIP_seq)
@@ -126,18 +126,21 @@ df_for_wig <- data.frame(seqnames=seqnames(result.methylation),
                          scores=elementMetadata(result.methylation)$binMethyl,
                          strands=strand(result.methylation))
 
+
+fname<-unlist(strsplit(basename(opt$bamFile),split="\\."))[1]
+if(!dir.exists(paste0(opt$outputDir,"/gw"))){dir.create(paste0(opt$outputDir,"/gw"))}
+
 # Export in a bed file for the final matrix
-extformatrix <- "_matrix.bed"
-bed_matrix_output <- fn$identity("$output$sample$extformatrix")
+bed_matrix_output<-paste0(opt$outputDir,"/gw/MeDESTrand_hg38_",fname,"_ws",ws,"_matrix.bed")
 write.table(df_for_matrix, file=bed_matrix_output, quote=F, sep="\t", row.names=F, col.names=F)
 
 # Export in a bed file for the wig files
-extforwig <- "_wig.bed"
-bed_wig_output <- fn$identity("$output$sample$extforwig")
+bed_wig_output <- paste0(opt$outputDir,"/gw/MeDESTrand_hg38_",fname,"_ws",ws,"_wig.bed")
 write.table(df_for_wig, file=bed_wig_output, quote=F, sep="\t", row.names=F, col.names=F)
 
 # Export in a wig file
-wig <- ".wig"
 bed_loaded <- import(con=bed_wig_output, format="bed")
-wig_output <- fn$identity("$output$sample$wig")
+wig_output <- paste0(opt$outputDir,"/gw/MeDESTrand_hg38_",fname,"_ws",ws,".wig")
 export.wig(object=bed_loaded, con=wig_output)
+
+
