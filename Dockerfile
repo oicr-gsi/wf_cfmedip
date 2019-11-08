@@ -48,6 +48,6 @@ RUN apt-get install -y python3-pip \
 
 RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" > /etc/profile.d/custom_paths.sh #ensures paths in cluster?
 	
-RUN cd /home && mkdir cromwell fastq index output
+COPY R /home
 	
 
