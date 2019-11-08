@@ -1,11 +1,11 @@
 FROM r-base:3.6.1
-
-ENV PATH=/usr/lib/bwa-0.7.17:$PATH
     
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		curl \
 		nano \
+		bc \    #parseMethControl
+		scale \ #parseMethControl
 		gawk \
 		libxml2-dev \
 		libcurl4-openssl-dev \
@@ -31,8 +31,6 @@ RUN cd /home \
 	&& make \
 	&& cd /home && mv /home/bwa-0.7.17 /usr/lib/ && rm bwa-0.7.17.tar.bz2
 
-ENV PATH=/usr/lib/bwa-0.7.17:$PATH
-	
 RUN cd /home \
 	&& wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 \
 	&& tar -xvjf samtools-1.9.tar.bz2 \
@@ -47,7 +45,9 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsu
 
 RUN apt-get install -y python3-pip \
 	&& pip3 install UMI-tools
+
+RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" > /etc/profile.d/custom_paths.sh #ensures paths in cluster?
 	
-RUN cd /home && mkdir cromwell fastq index output
+COPY R /home
 	
 
