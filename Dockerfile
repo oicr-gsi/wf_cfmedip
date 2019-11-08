@@ -5,7 +5,6 @@ RUN apt-get update \
 		curl \
 		nano \
 		bc \    #parseMethControl
-		gawk \
 		libxml2-dev \
 		libcurl4-openssl-dev \
 		libssl-dev \
