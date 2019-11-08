@@ -9,11 +9,11 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list,description=msg.description,usage = msg.usage);
 opt = parse_args(opt_parser);
 
-if (is.null(opt$bamFile) | is.null(opt$outputDir | is.null(opt$windowSize))){
+if (is.null(opt$bamFile) | is.null(opt$outputDir) | is.null(opt$windowSize)){
   print_help(opt_parser)
   stop("ERROR: parameters --bamFile, --outputDir and --windowSize must be provided", call.=FALSE)
 }
-if (!file.exists(paste0(opt$inputDir,"/",opt$bamFile))){
+if (!file.exists(opt$bamFile)){
   print_help(opt_parser)
   stop(paste0("ERROR: bam file not found ",opt$bamFile), call.=FALSE)
 }
@@ -44,3 +44,7 @@ CS=MEDIPS.couplingVector(pattern="CG", refObj=MeDIP.set)
 MEDIPS.set.rms=MEDIPS.meth(MSet1 = MeDIP.set, CSet = CS,MeDIP=TRUE)[paste0(gsub("-",".",basename(opt$bamFile)),".rms")]
 
 write.table(MEDIPS.set.rms,paste0(opt$outputDir,"/MEDIPS_hg38_ws",ws,"_rms.txt"),row.names=F,quote=F,col.names=F)
+
+
+
+
