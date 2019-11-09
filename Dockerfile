@@ -5,11 +5,13 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		bc \
 		bowtie2 \
+		bzip2 \
 		curl \
 		default-jre \
 		libcurl4-openssl-dev \
 		libssl-dev \
 		libxml2-dev \
+		libz-dev \
 		nano \
 		wget
 
