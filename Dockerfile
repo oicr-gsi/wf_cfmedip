@@ -11,9 +11,9 @@ RUN apt-get update \
 		libcurl4-openssl-dev \
 		libssl-dev \
 		libxml2-dev \
-		libz-dev \
 		nano \
-		wget
+		wget \
+		zlib1g-dev
 
 RUN curl -L -o /usr/lib/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar \
 	&& curl -L -o /usr/lib/cromwell.jar https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar \
