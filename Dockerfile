@@ -1,4 +1,4 @@
-FROM r-ver:3.6.1 #r-ver is built on debian:stable, whereas r-base follows debian:testing
+FROM rocker/r-ver:3.6.1 #r-ver is built on debian:stable, whereas r-base follows debian:testing
     
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
