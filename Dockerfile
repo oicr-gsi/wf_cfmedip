@@ -41,7 +41,7 @@ RUN cd /home \
 	&& cd .. \
 	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
 	
-RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsubfn"))' \
+RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg38"))' \
 	&& R -e 'library(devtools);devtools::install_github("jxu1234/MeDEStrand")'
 
