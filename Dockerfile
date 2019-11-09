@@ -8,6 +8,7 @@ RUN apt-get update \
 		bzip2 \
 		curl \
 		default-jre \
+		libbz2-dev \
 		libcurl4-openssl-dev \
 		libssl-dev \
 		libxml2-dev \
