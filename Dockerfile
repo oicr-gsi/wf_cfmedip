@@ -10,6 +10,7 @@ RUN apt-get update \
 		default-jre \
 		libbz2-dev \
 		libcurl4-openssl-dev \
+		liblzma-dev \
 		libssl-dev \
 		libxml2-dev \
 		nano \
