@@ -1,5 +1,6 @@
+#rocker/r-ver is built on debian:stable, whereas r-base follows debian:testing
 FROM rocker/r-ver:3.6.1 
-#r-ver is built on debian:stable, whereas r-base follows debian:testing
+
     
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
@@ -42,11 +43,12 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsu
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg38"))' \
 	&& R -e 'library(devtools);devtools::install_github("jxu1234/MeDEStrand")'
 
+#Flag '--no-install-recommends' unsuitable for python as it skips installation of required libraries
 RUN apt-get install -y python3-pip \
 	&& pip3 install UMI-tools 
-#Flag '--no-install-recommends' no good for python as it skips installation of required libraries
 
-RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" > /etc/profile.d/custom_paths.sh #ensures paths in cluster?
+#Does it prevent loss of $PATH in cluster?
+RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" > /etc/profile.d/custom_paths.sh
 	
 COPY R /home
 	
