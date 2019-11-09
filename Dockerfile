@@ -1,17 +1,17 @@
 #rocker/r-ver is built on debian:stable, whereas r-base follows debian:testing
 FROM rocker/r-ver:3.6.1 
-
     
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-		curl \
-		nano \
 		bc \
-		libxml2-dev \
+		bowtie2 \
+		curl \
+		default-jre \
 		libcurl4-openssl-dev \
 		libssl-dev \
-		default-jre \
-		bowtie2
+		libxml2-dev \
+		nano \
+		wget
 
 RUN curl -L -o /usr/lib/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar \
 	&& curl -L -o /usr/lib/cromwell.jar https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar \
