@@ -11,6 +11,7 @@ RUN apt-get update \
 		libbz2-dev \
 		libcurl4-openssl-dev \
 		liblzma-dev \
+		libncurses5-dev \
 		libssl-dev \
 		libxml2-dev \
 		nano \
