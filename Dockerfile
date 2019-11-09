@@ -5,13 +5,17 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		bc \
 		bowtie2 \
+		bzip2 \
 		curl \
 		default-jre \
+		libbz2-dev \
 		libcurl4-openssl-dev \
+		liblzma-dev \
 		libssl-dev \
 		libxml2-dev \
 		nano \
-		wget
+		wget \
+		zlib1g-dev
 
 RUN curl -L -o /usr/lib/picard.jar https://github.com/broadinstitute/picard/releases/download/2.20.8/picard.jar \
 	&& curl -L -o /usr/lib/cromwell.jar https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar \
@@ -39,7 +43,7 @@ RUN cd /home \
 	&& cd .. \
 	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
 	
-RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools","gsubfn"))' \
+RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","devtools"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg38"))' \
 	&& R -e 'library(devtools);devtools::install_github("jxu1234/MeDEStrand")'
 
