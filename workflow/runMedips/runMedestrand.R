@@ -86,7 +86,7 @@ MeDEStrand.binMethyl_hg38 <- function(MSetInput=NULL, CSet=NULL, ccObj=NULL, Gra
 }
 
 
-# Disable the scientific notation in R (to avoid powers (1e+10 for instance) to be written in output files)
+# Disables the scientific notation to avoid powers in genomic coordinates (i.e. 1e+10)
 options(scipen = 999)
 
 # Set global variables for importing short reads. For details, in R console, type "?MeDEStrand.createSet"
@@ -94,7 +94,7 @@ BSgenome="BSgenome.Hsapiens.UCSC.hg38"
 uniq = 1
 extend = 200
 shift = 0
-chr.select = paste0("chr",c(1:22,"X","Y"))
+chr.select=paste0("chr",c(1:22,"X","Y"))
 
 # Create a MeDIP set
 MeDIP_seq = MeDEStrand.createSet(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, window_size=ws, chr.select=chr.select, paired=paired)
