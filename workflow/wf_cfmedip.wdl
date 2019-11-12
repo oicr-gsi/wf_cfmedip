@@ -10,23 +10,16 @@ workflow wf_cfmedip {
     File fasta
 
     String? sampleName
-
     String patternUMI = "NNNNN"
     String patternUMI2 = "NNNNN"
-
     String seqMeth = "F19K16"
     String seqUmeth = "F24B22"
     Boolean useUMI = true
-    Array[Int] windowSize = [200] 
-    
+    Int windowSize = 200
   }
+  
+  String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "")
 
-  String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(sub(sub(sub(basename(R1),".gz",""),".fastq",""),".fq",""),".R1","")
-  #select_first([sampleName,""]) is a workaround for optinal variable interpolation, avoids error: Cannot coerce expression of type 'String?' to 'String'
-  #sampleName+"" also does the trick
-  
-  #String fname = sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "") #TEST PENDING
-  
   call extractUMI {
     input:
       useUMI=useUMI,
@@ -75,19 +68,17 @@ workflow wf_cfmedip {
       bamFilterDedup=removeDuplicates.bamFilterDedup,
       fasta=fasta
   }
-  
-  if(defined(seqMeth)){
-    call parseMethControl{
-      input:
-        bamFilterDedup=removeDuplicates.bamFilterDedup,
-        outputPath=outputPath,
-        fname=fname,
-        aligner=aligner,
-        seqMeth=seqMeth,
-        seqUmeth=seqUmeth
-    }
+
+  call parseMethControl{
+    input:
+      bamFilterDedup=removeDuplicates.bamFilterDedup,
+      outputPath=outputPath,
+      fname=fname,
+      aligner=aligner,
+      seqMeth=seqMeth,
+      seqUmeth=seqUmeth
   }
-  
+
   call getFilterMetrics{
     input:
       bamFile=alignReads.bamFile,
@@ -110,7 +101,8 @@ workflow wf_cfmedip {
       bamFilterDedup=removeDuplicates.bamFilterDedup,
       fname=fname
       outputPath=outputPath,
-      aligner=aligner
+      aligner=aligner,
+      windowSize=windowSize
   }
 
 }
@@ -158,7 +150,7 @@ task alignReads{
     String fname
     String outputPath
     String aligner
-    }
+  }
     
   command{
     if [ "~{aligner}" == "bowtie2" ];then
@@ -224,8 +216,8 @@ task filterBadAlignments{
       READ_LIST_FILe=~{outputPath}/~{fname}.~{aligner}.filter2.high_mismatch.txt \
       FILTER=excludeReadList
       
-      }
-
+  }
+  
   output{
     File bamFilter=outputPath+"/"+fname+"."+aligner+".filter3.bam"
   }
@@ -238,7 +230,7 @@ task removeDuplicates{
     String fname
     String outputPath
     String aligner
-    }
+  }
     
   command{
     if [[ ~{useUMI} == true ]];then
@@ -295,7 +287,8 @@ task getBamMetrics{
   }
   
   output{
-
+    File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
+    File picardGcBiasMetrics=picardOut+'/'+fname+'.'+aligner+'.gc_bias_metrics.txt'
   }
 
 }
@@ -336,20 +329,21 @@ task runMedips{
     String fname
     String outputPath
     String aligner aligner
+    String windowSize
   }
   command{
     Rscript /home/R/runMedips.R \
       --bamFile ~{bamFilterDedup} \
       --outputDir ~{outputPath} \
-      --windowSize 200
+      --windowSize ~{windowSize}
       
     Rscript /home/R/runMedestrand.R \
       --bamFile ~{bamFilterDedup} \
       --outputDir ~{outputPath} \
-      --windowSize 200
+      --windowSize ~{windowSize}
   }
   output{
-  
+    File medestrandWig=outputPath+'/wg/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'.wig.gz'
   }
 }
 
@@ -394,6 +388,4 @@ task doPicardDedup{
       REMOVE_DUPLICATES=true
   }
 }
-
-
 
