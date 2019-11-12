@@ -99,7 +99,7 @@ workflow wf_cfmedip {
   call runMedips{
     input:
       bamFilterDedup=removeDuplicates.bamFilterDedup,
-      fname=fname
+      fname=fname,
       outputPath=outputPath,
       aligner=aligner,
       windowSize=windowSize
@@ -328,22 +328,22 @@ task runMedips{
     File bamFilterDedup
     String fname
     String outputPath
-    String aligner aligner
+    String aligner
     String windowSize
   }
   command{
-    Rscript /home/R/runMedips.R \
+    Rscript /workflow/runMedips/runMedips.R \
       --bamFile ~{bamFilterDedup} \
       --outputDir ~{outputPath} \
       --windowSize ~{windowSize}
       
-    Rscript /home/R/runMedestrand.R \
+    Rscript /workflow/runMedips/runMedestrand.R \
       --bamFile ~{bamFilterDedup} \
       --outputDir ~{outputPath} \
       --windowSize ~{windowSize}
   }
   output{
-    File medestrandWig=outputPath+'/wg/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'.wig.gz'
+    File medestrandWig=outputPath+'/runMedips/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'.wig.gz'
   }
 }
 
