@@ -94,7 +94,7 @@ BSgenome="BSgenome.Hsapiens.UCSC.hg38"
 uniq = 1
 extend = 200
 shift = 0
-chr.select = paste0('chr', c(1:22) )
+chr.select = paste0("chr",c(1:22,"X","Y"))
 
 # Create a MeDIP set
 MeDIP_seq = MeDEStrand.createSet(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, window_size=ws, chr.select=chr.select, paired=paired)
