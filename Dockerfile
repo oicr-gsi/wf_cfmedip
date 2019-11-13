@@ -55,6 +55,6 @@ RUN apt-get install -y python3-pip \
 #Does it prevent loss of $PATH in cluster?
 RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" > /etc/profile.d/custom_paths.sh
 	
-COPY R /home
+COPY workflow /workflow
 	
 
