@@ -57,7 +57,4 @@ RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" >> /etc
 	&& cat /etc/profile | awk '{ if ($0=="export PATH") print "export PATH=$PATH:/usr/lib/bwa-0.7.17"; else print $0}' > /etc/profile_tmp \
 	&& mv /etc/profile_tmp /etc/profile
 
-	
 COPY workflow /workflow
-	
-
