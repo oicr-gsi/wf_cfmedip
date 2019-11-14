@@ -331,19 +331,24 @@ task runMedips{
     String aligner
     String windowSize
   }
+  
+  String outMedips=outputPath+'/runMedips'
+  
   command{
+    mkdir -p ~{outMedips}
+  
     Rscript /workflow/runMedips/runMedips.R \
       --bamFile ~{bamFilterDedup} \
-      --outputDir ~{outputPath} \
+      --outputDir ~{outMedips} \
       --windowSize ~{windowSize}
       
     Rscript /workflow/runMedips/runMedestrand.R \
       --bamFile ~{bamFilterDedup} \
-      --outputDir ~{outputPath} \
+      --outputDir ~{outMedips} \
       --windowSize ~{windowSize}
   }
   output{
-    File medestrandWig=outputPath+'/runMedips/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'.wig.gz'
+    File medestrandWig=outMedips+'/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'.wig.gz'
   }
 }
 
