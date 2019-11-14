@@ -378,11 +378,16 @@ task doPicardDedup{
     String outputPath
     String aligner
   }
+  
+  String picardOut=outputPath+'/picard'
+  
   command{
+    mkdir -p ~{picardOut}
+    
     java -jar /usr/lib/picard.jar MarkDuplicates \
       I=~{bamFilter} \
       O=~{outputPath}/~{fname}.~{aligner}.filter.dedup-Picard.bam \
-      M=~{outputPath}/picard/~{fname}.~{aligner}.filter.dedup-Picard.metrics \
+      M=~{picardOut}/~{fname}.~{aligner}.filter.dedup-Picard.metrics \
       ASSUME_SORTED=true \
       VALIDATION_STRINGENCY=SILENT \
       REMOVE_DUPLICATES=true
