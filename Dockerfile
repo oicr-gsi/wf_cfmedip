@@ -46,6 +46,7 @@ RUN cd /home \
 
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","remotes"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("MEDIPS","BSgenome.Hsapiens.UCSC.hg38"))' \
+	&& R -e 'library(remotes);remotes::install_github("oicr-gsi/modelTsne")' \
 	&& R -e 'library(remotes);remotes::install_github("jxu1234/MeDEStrand")'
 
 #Flag '--no-install-recommends' unsuitable for python as it skips installation of required libraries
