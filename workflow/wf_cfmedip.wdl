@@ -348,7 +348,7 @@ task runMedips{
       --windowSize ~{windowSize}
   }
   output{
-    File medestrandWig=outMedips+'/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'.wig.gz'
+    File medestrandWig=outMedips+'/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'_wig.gz'
   }
 }
 
