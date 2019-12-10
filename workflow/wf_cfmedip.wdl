@@ -82,7 +82,6 @@ workflow wf_cfmedip {
   call getFilterMetrics{
     input:
       extrR1=extractUMI.extrR1,
-      bamFile=alignReads.bamFile,
       bamFilterDedup=removeDuplicates.bamFilterDedup,
       outputPath=outputPath,
       aligner=aligner,
@@ -356,7 +355,6 @@ task runMedips{
 task getFilterMetrics{
   input{
     File extrR1
-    File bamFile
     File bamFilterDedup
     String outputPath
     String aligner
@@ -365,7 +363,6 @@ task getFilterMetrics{
   
   command{
     total=`echo "$(gunzip -k -c ~{extrR1} | wc -l)/4" | bc`
-    aligned=$(samtools view ~{bamFile} | wc -l)
     filter1=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter1.bam | wc -l)
     filter2=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter2.bam | wc -l)
     filter3=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter3.bam | wc -l)
