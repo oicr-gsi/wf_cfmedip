@@ -59,7 +59,7 @@ genome.counts<-data.frame(MeDIPset@genome_count)
 df.counts<-cbind(pos.chr,pos.start,pos.end,genome.counts)
 file.counts<-paste0(opt$outputDir,"/MEDIPS_hg38_",fname,"_ws",ws,"_count.txt")
 write.table(df.counts,file.counts,row.names=F,quote=F,col.names=F)
-system(paste0("gzip ",file.counts))
+system(paste0("gzip -f ",file.counts))
 
 file.rms<-paste0(opt$outputDir,"/MEDIPS_hg38_",fname,"_ws",ws,"_rms.txt")
 #coupling set: maps CG densities across the genome
@@ -75,5 +75,5 @@ tryCatch({
 })
 if(is.null(df.rms)){df.rms<-("#Error: MEDIPS CpG density normalization failed due to small number of reads")}
 write.table(df.rms,file.rms,row.names=F,quote=F,col.names=F)
-system(paste0("gzip ",file.rms))
+system(paste0("gzip -f ",file.rms))
 
