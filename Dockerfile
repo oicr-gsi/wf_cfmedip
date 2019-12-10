@@ -59,3 +59,5 @@ RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" >> /etc
 	&& mv /etc/profile_tmp /etc/profile
 
 COPY workflow /workflow
+
+ENV PATH=/usr/lib/bwa-0.7.17:$PATH
