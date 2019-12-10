@@ -97,8 +97,9 @@ shift = 0
 chr.select=paste0("chr",c(1:22,"X","Y"))
 
 fname<-unlist(strsplit(basename(opt$bamFile),split="\\."))[1]
-if(!dir.exists(paste0(opt$outputDir,"/runMedips"))){dir.create(paste0(opt$outputDir,"/runMedips"))}
+if(!dir.exists(opt$outputDir)){dir.create(opt$outputDir)}
 df_for_wig<-NULL
+bed_wig_output <- paste0(opt$outputDir,"/MeDESTrand_hg38_",fname,"_ws",ws,"_wig.bed")
 tryCatch({
   
   # Create a MeDIP set
@@ -123,8 +124,6 @@ tryCatch({
                            names=c(rep(".", length(result.methylation))),
                            scores=elementMetadata(result.methylation)$binMethyl,
                            strands=strand(result.methylation))
-  
-  bed_wig_output <- paste0(opt$outputDir,"/runMedips/MeDESTrand_hg38_",fname,"_ws",ws,"_wig.bed")
   
 },error=function(e){
   message("Error: MeDSTrand CpG density normalization failed due to small number of reads")

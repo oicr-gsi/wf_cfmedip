@@ -40,7 +40,7 @@ message("MEDIPS: ws:",ws,".txt")
 MeDIPset = MEDIPS.createSet(file = opt$bamFile,BSgenome = BSgenome, extend = extend, shift = shift, paired=paired, uniq = uniq, window_size = ws,chr.select=chr.select)
 
 fname<-unlist(strsplit(basename(opt$bamFile),split="\\."))[1]
-if(!dir.exists(paste0(opt$outputDir,"/runMedips"))){dir.create(paste0(opt$outputDir,"/runMedips"))}
+if(!dir.exists(opt$outputDir)){dir.create(opt$outputDir)}
 
 pos.start<-c()
 pos.end<-c()
@@ -57,11 +57,11 @@ pos.end<-data.frame(pos.end)
 genome.counts<-data.frame(MeDIPset@genome_count)
 
 df.counts<-cbind(pos.chr,pos.start,pos.end,genome.counts)
-file.counts<-paste0(opt$outputDir,"/runMedips/MEDIPS_hg38_",fname,"_ws",ws,"_count.txt")
+file.counts<-paste0(opt$outputDir,"/MEDIPS_hg38_",fname,"_ws",ws,"_count.txt")
 write.table(df.counts,file.counts,row.names=F,quote=F,col.names=F)
 system(paste0("gzip ",file.counts))
 
-file.rms<-paste0(opt$outputDir,"/runMedips/MEDIPS_hg38_",fname,"_ws",ws,"_rms.txt")
+file.rms<-paste0(opt$outputDir,"/MEDIPS_hg38_",fname,"_ws",ws,"_rms.txt")
 #coupling set: maps CG densities across the genome
 CS=MEDIPS.couplingVector(pattern="CG", refObj=MeDIPset)
 df.rms<-NULL
