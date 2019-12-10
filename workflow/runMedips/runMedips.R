@@ -39,32 +39,41 @@ chr.select=paste0("chr",c(1:22,"X","Y"))
 message("MEDIPS: ws:",ws,".txt")
 MeDIPset = MEDIPS.createSet(file = opt$bamFile,BSgenome = BSgenome, extend = extend, shift = shift, paired=paired, uniq = uniq, window_size = ws,chr.select=chr.select)
 
-#coupling set: maps CG densities across the genome
-CS=MEDIPS.couplingVector(pattern="CG", refObj=MeDIPset)
-
-#####MEDIPS.set(MeDIP=true,...) performs CpG density normalization (rms: relative methylation score)
-MEDIPSset.meth=MEDIPS.meth(MSet1 = MeDIPset, CSet = CS,MeDIP=TRUE)
-
 fname<-unlist(strsplit(basename(opt$bamFile),split="\\."))[1]
 if(!dir.exists(paste0(opt$outputDir,"/runMedips"))){dir.create(paste0(opt$outputDir,"/runMedips"))}
 
-df.counts<-cbind(MEDIPSset.meth[,c('chr','start','stop')],MeDIPset@genome_count)
+pos.start<-c()
+pos.end<-c()
+pos.chr<-c()
+for(i in 1:length(chr.select)){
+  no.window<-ceiling(MeDIPset@chr_lengths[i]/ws)
+  pos.chr<-c(pos.chr,rep(chr.select[i],no.window))
+  pos.start<-c(pos.start,seq(from=1,to=((no.window-1)*ws)+1,by=ws))
+  pos.end<-c(pos.end,seq(from=ws,to=no.window*ws,by=ws))
+}
+pos.chr<-data.frame(pos.chr)
+pos.start<-data.frame(pos.start)
+pos.end<-data.frame(pos.end)
+genome.counts<-data.frame(MeDIPset@genome_count)
+
+df.counts<-cbind(pos.chr,pos.start,pos.end,genome.counts)
 file.counts<-paste0(opt$outputDir,"/runMedips/MEDIPS_hg38_",fname,"_ws",ws,"_count.txt")
 write.table(df.counts,file.counts,row.names=F,quote=F,col.names=F)
 system(paste0("gzip ",file.counts))
 
-MEDIPS.rms<-MEDIPSset.meth[,paste0(gsub("-",".",basename(opt$bamFile)),".rms")]
-df.rms<-MEDIPSset.meth[,c('chr','start','stop',paste0(gsub("-",".",basename(opt$bamFile)),".rms"))]
 file.rms<-paste0(opt$outputDir,"/runMedips/MEDIPS_hg38_",fname,"_ws",ws,"_rms.txt")
+#coupling set: maps CG densities across the genome
+CS=MEDIPS.couplingVector(pattern="CG", refObj=MeDIPset)
+df.rms<-NULL
+tryCatch({
+  #####MEDIPS.set(MeDIP=true,...) performs CpG density normalization (rms: relative methylation score)
+  MEDIPSset.meth=MEDIPS.meth(MSet1 = MeDIPset, CSet = CS,MeDIP=TRUE)
+  MEDIPS.rms<-MEDIPSset.meth[,paste0(gsub("-",".",basename(opt$bamFile)),".rms")]
+  df.rms<-MEDIPSset.meth[,c('chr','start','stop',paste0(gsub("-",".",basename(opt$bamFile)),".rms"))]
+},error=function(e){
+  message("Error: MEDIPS CpG density normalization failed due to small number of reads")
+})
+if(is.null(df.rms)){df.rms<-("#Error: MEDIPS CpG density normalization failed due to small number of reads")}
 write.table(df.rms,file.rms,row.names=F,quote=F,col.names=F)
 system(paste0("gzip ",file.rms))
-
-
-
-
-
-
-
-
-
 
