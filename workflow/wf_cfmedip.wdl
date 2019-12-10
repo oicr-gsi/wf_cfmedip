@@ -171,7 +171,7 @@ task alignReads{
     fi
     
     if [ "~{aligner}" == "bwa" ];then
-    bwa -t 8 \
+    bwa mem -t 8 \
     ~{index} \
     ~{extrR1} \
     ~{extrR2} \
