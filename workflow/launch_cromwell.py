@@ -76,7 +76,7 @@ with open(outputPath+'/wf_cfmedip.inputs.json', 'w') as json_file:
 
 
 #-Duser.dir sets java's working directory, used by cromwell to store execution files (without this, cromwell may use the user's home directory)
-cmd = ['java','-Xmx1g','-Duser.dir=/cromwell-executions','-jar','/usr/lib/cromwell.jar',
+cmd = ['java','-Xmx1g','-Duser.dir=/cromwell','-jar','/usr/lib/cromwell.jar',
         'run','/workflow/wf_cfmedip.wdl',
         '-i',outputPath+'/wf_cfmedip.inputs.json'
       ]
