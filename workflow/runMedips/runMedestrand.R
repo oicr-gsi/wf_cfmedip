@@ -96,32 +96,40 @@ extend = 200
 shift = 0
 chr.select=paste0("chr",c(1:22,"X","Y"))
 
-# Create a MeDIP set
-MeDIP_seq = MeDEStrand.createSet(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, window_size=ws, chr.select=chr.select, paired=paired)
-
-#  Count CpG pattern in the bins
-CS = MeDEStrand.countCG(pattern="CG", refObj=MeDIP_seq)
-
-# Infer genome-wide absolute methylation levels:
-#result.methylation = MeDEStrand.binMethyl(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
-result.methylation = MeDEStrand.binMethyl_hg38(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
-
-# Create a dataframe from the previous GRanges object.
-# Warning: GRanges and UCSC BED files use different conventions for the genomic coordinates
-# GRanges use 1-based intervals (chr1:2-8 means the 2nd till and including the 8th base of chr1, i.e. a range of length of 7 bases)
-# UCSC bed-files use 0-based coordinates (chr1:2-8 means the 3rd base till and including the 8th base, i.e. a range of length of 6 bases)
-
-# Dataframe for generating a bed file used to generate then a wig file
-df_for_wig <- data.frame(seqnames=seqnames(result.methylation),
-                         starts=start(result.methylation)-1,
-                         ends=end(result.methylation),
-                         names=c(rep(".", length(result.methylation))),
-                         scores=elementMetadata(result.methylation)$binMethyl,
-                         strands=strand(result.methylation))
-
 fname<-unlist(strsplit(basename(opt$bamFile),split="\\."))[1]
 if(!dir.exists(paste0(opt$outputDir,"/runMedips"))){dir.create(paste0(opt$outputDir,"/runMedips"))}
-bed_wig_output <- paste0(opt$outputDir,"/runMedips/MeDESTrand_hg38_",fname,"_ws",ws,"_wig.bed")
+df_for_wig<-NULL
+tryCatch({
+  
+  # Create a MeDIP set
+  MeDIP_seq = MeDEStrand.createSet(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, window_size=ws, chr.select=chr.select, paired=paired)
+  
+  #  Count CpG pattern in the bins
+  CS = MeDEStrand.countCG(pattern="CG", refObj=MeDIP_seq)
+  
+  # Infer genome-wide absolute methylation levels:
+  #result.methylation = MeDEStrand.binMethyl(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
+  result.methylation = MeDEStrand.binMethyl_hg38(MSetInput = MeDIP_seq, CSet = CS, Granges = TRUE)
+  
+  # Create a dataframe from the previous GRanges object.
+  # Warning: GRanges and UCSC BED files use different conventions for the genomic coordinates
+  # GRanges use 1-based intervals (chr1:2-8 means the 2nd till and including the 8th base of chr1, i.e. a range of length of 7 bases)
+  # UCSC bed-files use 0-based coordinates (chr1:2-8 means the 3rd base till and including the 8th base, i.e. a range of length of 6 bases)
+  
+  # Dataframe for generating a bed file used to generate then a wig file
+  df_for_wig <- data.frame(seqnames=seqnames(result.methylation),
+                           starts=start(result.methylation)-1,
+                           ends=end(result.methylation),
+                           names=c(rep(".", length(result.methylation))),
+                           scores=elementMetadata(result.methylation)$binMethyl,
+                           strands=strand(result.methylation))
+  
+  bed_wig_output <- paste0(opt$outputDir,"/runMedips/MeDESTrand_hg38_",fname,"_ws",ws,"_wig.bed")
+  
+},error=function(e){
+  message("Error: MeDSTrand CpG density normalization failed due to small number of reads")
+})
+if(is.null(df_for_wig)){df.rms<-("#Error: MeDSTrand CpG density normalization failed due to small number of reads")}
 write.table(df_for_wig, file=bed_wig_output, quote=F, sep="\t", row.names=F, col.names=F)
 system(paste0("gzip ",bed_wig_output))
 
