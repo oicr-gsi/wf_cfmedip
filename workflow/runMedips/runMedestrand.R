@@ -130,5 +130,5 @@ tryCatch({
 })
 if(is.null(df_for_wig)){df.rms<-("#Error: MeDSTrand CpG density normalization failed due to small number of reads")}
 write.table(df_for_wig, file=bed_wig_output, quote=F, sep="\t", row.names=F, col.names=F)
-system(paste0("gzip ",bed_wig_output))
+system(paste0("gzip -f ",bed_wig_output))
 
