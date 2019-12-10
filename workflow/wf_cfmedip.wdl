@@ -362,13 +362,13 @@ task getFilterMetrics{
   }
   
   command{
-    total=`echo "$(gunzip -k -c ~{extrR1} | wc -l)/4" | bc`
+    total=`echo "$(gunzip -k -c ~{extrR1} | wc -l)/2" | bc`
     filter1=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter1.bam | wc -l)
     filter2=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter2.bam | wc -l)
     filter3=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter3.bam | wc -l)
     dedup=$(samtools view ~{bamFilterDedup} | wc -l)
-    echo -e "total\taligned\tfilter1\tfilter2\tfilter3\tdedup" > ~{outputPath}/filter_metrics.txt
-    echo -e "$total\t$aligned\t$filter1\t$filter2\t$filter3\t$dedup" >> ~{outputPath}/filter_metrics.txt
+    echo -e "total\tfilter1\tfilter2\tfilter3\tdedup" > ~{outputPath}/filter_metrics.txt
+    echo -e "$total\t$filter1\t$filter2\t$filter3\t$dedup" >> ~{outputPath}/filter_metrics.txt
   }
   
   output{
