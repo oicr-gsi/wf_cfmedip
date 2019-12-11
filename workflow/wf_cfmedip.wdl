@@ -295,7 +295,7 @@ task getBamMetrics{
   }
   
   output{
-    File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
+    File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics.txt'
     File picardGcBiasMetrics=picardOut+'/'+fname+'.'+aligner+'.gc_bias_metrics.txt'
   }
   
@@ -400,10 +400,14 @@ task doPicardDedup{
     java -jar /usr/lib/picard.jar MarkDuplicates \
     I=~{bamFilter} \
     O=~{outputPath}/~{fname}.~{aligner}.filter.dedup-Picard.bam \
-    M=~{picardOut}/~{fname}.~{aligner}.filter.dedup-Picard.metrics \
+    M=~{picardOut}/doPicardDedup.MarkDuplicates.metrics.txt \
     ASSUME_SORTED=true \
     VALIDATION_STRINGENCY=SILENT \
     REMOVE_DUPLICATES=true
+  }
+  
+  output{
+    File filterPicardDedupMetrics=picardOut+"/doPicardDedup.MarkDuplicates.metrics.txt"
   }
 }
 
