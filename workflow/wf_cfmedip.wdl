@@ -281,7 +281,7 @@ task getBamMetrics{
     
     java -jar /usr/lib/picard.jar CollectMultipleMetrics \
     R=~{fasta} \
-    I=~{bamFilterDedup}\
+    I=~{bamFilterDedup} \
     O=~{picardOut}/~{fname}.~{aligner} \
     VALIDATION_STRINGENCY=SILENT
     
@@ -295,7 +295,7 @@ task getBamMetrics{
   }
   
   output{
-    File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics.txt'
+    File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
     File picardGcBiasMetrics=picardOut+'/'+fname+'.'+aligner+'.gc_bias_metrics.txt'
   }
   
