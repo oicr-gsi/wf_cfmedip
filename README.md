@@ -40,13 +40,15 @@ Build the image (this process can take more than two hours):
 ![wf_cfmedip_file_structure](img/screenshot_file_structure.png)
 
 The command:
-`python3 /workflow/launch_cromwell.py \
+```
+python3 /workflow/launch_cromwell.py \
 	--R1 /data/fastq/sample001_R1_001.fastq.gz \
 	--R2 /data/fastq/sample001_R2_001.fastq.gz \
 	--aligner bowtie2 \
 	--indexPath /data/index/bowtie2/ucsc.hg38_F19K16_F24B22/ucsc.hg38_F19K16_F24B22 \
 	--fastaFile /data/index/fasta/ucsc.hg38_F19K16_F24B22.fasta \
-	--outputPath /data/output/sample001`
+	--outputPath /data/output/sample001
+```
 
 
 
