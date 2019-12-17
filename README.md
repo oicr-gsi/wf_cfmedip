@@ -68,7 +68,11 @@ docker run --rm -it -u $(id -u):$(id -g) \
 
 **Do not use sudo to execute `docker` commands**, instead, add an existing user to the _docker_ group `sudo usermod -aG docker myuser`, which grants this user permissions to execute the `docker` command (i.e. `docker image ls`, `docker run`, `docker build`, etc).
 
+## Credits
 
+Developed by Alberto León at [Ontario Institute for Cancer Research / Genome Sequence Informatics team](https://oicr.on.ca/)
+
+[![OICR logo](img/OICR_logo.png)](https://oicr.on.ca)
 
 
 
