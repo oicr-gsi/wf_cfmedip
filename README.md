@@ -39,6 +39,25 @@ Build the image (this process can take more than two hours):
 ## Example
 ![wf_cfmedip_file_structure](img/screenshot_file_structure.png)
 
+```
+|storage
+	   |cromwell
+	   |MyStudy
+		      |fastq
+				   |sample001_R1.fastq.gz
+				   |sample001_R2.fastq.gz
+		      |output
+				    |sample001
+						     |run_inside_container.sh
+			  |index
+			       |bowtie2
+				          |ucsc.hg38_F19K16_F24B22
+										         |ucsc.hg38_F19K16_F24B22
+				   |fasta
+						|ucsc.hg38_F19K16_F24B22.fasta
+```
+
+
 The command:
 ```
 python3 /workflow/launch_cromwell.py \
