@@ -37,8 +37,7 @@ Build the image (this process can take more than two hours):
 | --windowSize | Optional | MeDIPs window size parameter. Default = 200 |
 
 ## Example
-![wf_cfmedip_file_structure](img/screenshot_file_structure.png)
-
+File structure containing the elements required by the workflow:
 ```
 |storage
 	|cromwell
@@ -58,7 +57,7 @@ Build the image (this process can take more than two hours):
 ```
 
 
-The command:
+Contents of the file `/storage/MyStudy/sample001/run_inside_container.sh`:
 ```
 python3 /workflow/launch_cromwell.py \
 	--R1 /data/fastq/sample001_R1_001.fastq.gz \
@@ -69,6 +68,13 @@ python3 /workflow/launch_cromwell.py \
 	--outputPath /data/output/sample001
 ```
 
+Install the docker image locally by running `docker pull oicrgsi/wf_cfmedip`. Then, execute the following command, which "turns on the container" and orders it to execute the instructions contained in the file `run_inside_container.sh`:
+```
+docker run --rm -it -u $(id -u):$(id -g) \
+	-v /storage/cromwell:/cromwell \
+	-v /storage/MyStudy:/data \
+	oicrgsi/wf_cfmedip /data/output/sample001/run_inside_container.sh
+```
 
 
 
