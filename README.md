@@ -20,10 +20,6 @@ Build the image (can take more than two hours):
 `docker build -t wf_cfmedip:latest wf-cfMeDIP/`
 
 ## Workflow parameters
---R1 fastq file mate 1 (.gz allowed)
---R2: reads file mate 2
---aligner: 
-
 | Parrameter  | Required/Optional | Description |
 | --- | --- | --- |
 | --R1  | Required | fastq file mate 1 (.gz allowed) |
@@ -39,6 +35,8 @@ Build the image (can take more than two hours):
 | --seqUmeth | Optional | Name of sequence to be used as unmethylated control. Default = "F24B22" |
 | --useUMI | Optional | Do reads contain UMIs? Default = true |
 | --windowSize | Optional | MeDIPs window size parameter. Default = 200 |
+
+## Example
 
 
 
