@@ -3,15 +3,12 @@ Workflow for cfMeDIP data analysis using Docker and WDL
 
 ![wf_cfmedip_overview](img/plot_wf_cfmedip_overview.png)
 
-## Download pre-built image
-A pre-built Docker image is hosted in Docker Hub. Execute `docker pull oicrgsi/wf_cfmedip` to create a mirror image in the local registry.
+## Installation
+**Option 1:**
+Download the pre-built image that is hosted in Docker Hub by executiong `docker pull oicrgsi/wf_cfmedip`.
 
-## Build image locally
-Download repository:
-`git clone https://github.com/oicr-gsi/wf-cfMeDIP.git`
-
-Build the image (this process can take more than two hours): 
-`docker build -t wf_cfmedip:latest wf-cfMeDIP/`
+**Option 2:**
+Download the contents of the repository by executing `git clone https://github.com/oicr-gsi/wf-cfMeDIP.git`, and then build the Docker image by running `docker build -t oicr-gsi/wf_cfmedip:latest wf-cfMeDIP/`; this process can take more than two hours.
 
 ## Workflow parameters
 | Parrameter  | Required/Optional | Description |
@@ -49,7 +46,6 @@ File structure containing the elements required by the workflow:
 			|fasta
 				|ucsc.hg38_F19K16_F24B22.fasta
 ```
-
 
 Contents of the file `/storage/MyStudy/sample001/run_inside_container.sh`:
 ```
