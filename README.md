@@ -41,20 +41,20 @@ Build the image (this process can take more than two hours):
 
 ```
 |storage
-	   |cromwell
-	   |MyStudy
-		      |fastq
-				   |sample001_R1.fastq.gz
-				   |sample001_R2.fastq.gz
-		      |output
-				    |sample001
-						     |run_inside_container.sh
-			  |index
-			       |bowtie2
-				          |ucsc.hg38_F19K16_F24B22
-										         |ucsc.hg38_F19K16_F24B22
-				   |fasta
-						|ucsc.hg38_F19K16_F24B22.fasta
+	|cromwell
+	|MyStudy
+		|fastq
+			|sample001_R1.fastq.gz
+			|sample001_R2.fastq.gz
+		|output
+			|sample001
+				|run_inside_container.sh
+		|index
+			|bowtie2
+				|ucsc.hg38_F19K16_F24B22
+					|ucsc.hg38_F19K16_F24B22
+			|fasta
+				|ucsc.hg38_F19K16_F24B22.fasta
 ```
 
 
