@@ -1,13 +1,7 @@
 # wf-cfMeDIP
-Workflow for cfMeDIP data analysis using Docker
+Workflow for cfMeDIP data analysis using Docker and WDL
 
 ![wf_cfmedip_overview](img/plot_wf_cfmedip_overview.png)
-
-## User configuration: IMPORTANT!!! READ ME FIRST!!!
-
-**Do not use sudo to execute `docker` commands**, instead, add an existing user to the _docker_ group `sudo usermod -aG docker harrycallahan`, which grants this user permissions to execute the `docker` command (i.e. `docker image ls`, `docker run`, `docker build`, etc).
-
-To execute `docker run [docker_image]` in a development server, the user must pass its user and group IDs (in numeric format) by using the following `docker` command: `docker run --rm -u $(id -u):$(id -g) -ti [docker_image]`. As a consequence, the container processes belong to a user that is known by the host, allowing things like reading and writing data located in network shares. This user does not exist in the container, and the command prompt shows `I have no name!`, but processes are triggered under the valid UID nonetheless.
 
 ## Download pre-built image
 A pre-built Docker image is hosted in Docker Hub. Execute `docker pull oicrgsi/wf_cfmedip` to create a mirror image in the local registry.
@@ -68,7 +62,7 @@ python3 /workflow/launch_cromwell.py \
 	--outputPath /data/output/sample001
 ```
 
-Install the docker image locally by running `docker pull oicrgsi/wf_cfmedip`. Then, execute the following command, which "turns on the container" and orders it to execute the instructions contained in the file `run_inside_container.sh`:
+The following command "turns on" the Docker container and orders it to execute the instructions that are contained in the file `run_inside_container.sh`:
 ```
 docker run --rm -it -u $(id -u):$(id -g) \
 	-v /storage/cromwell:/cromwell \
@@ -76,6 +70,7 @@ docker run --rm -it -u $(id -u):$(id -g) \
 	oicrgsi/wf_cfmedip /data/output/sample001/run_inside_container.sh
 ```
 
+**Do not use sudo to execute `docker` commands**, instead, add an existing user to the _docker_ group `sudo usermod -aG docker myuser`, which grants this user permissions to execute the `docker` command (i.e. `docker image ls`, `docker run`, `docker build`, etc).
 
 
 
