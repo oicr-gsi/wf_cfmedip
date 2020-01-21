@@ -1,5 +1,5 @@
 #rocker/r-ver is built on debian:stable, whereas r-base follows debian:testing
-FROM rocker/r-ver:3.6.1 
+FROM r-base:3.6.2 
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
@@ -45,8 +45,7 @@ RUN cd /home \
 	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
 
 RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","remotes"))' \
-	&& R -e 'library(BiocManager);BiocManager::install(c("BSgenome.Hsapiens.UCSC.hg38"))' \
-	&& R -e 'library(remotes);remotes::install_github("translational-genomics-laboratory/MEDIPS")' \
+	&& R -e 'library(BiocManager);BiocManager::install(c("BSgenome.Hsapiens.UCSC.hg38","MEDIPS"))' \
 	&& R -e 'library(remotes);remotes::install_github("oicr-gsi/modelTsne")' \
 	&& R -e 'library(remotes);remotes::install_github("jxu1234/MeDEStrand")'
 
