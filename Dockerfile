@@ -44,7 +44,7 @@ RUN cd /home \
 	&& cd .. \
 	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
 
-RUN R -e 'install.packages(c("BiocManager","docopt","reshape2","remotes"))' \
+RUN R -e 'install.packages(c("BiocManager","docopt","littler","reshape2","remotes"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("BSgenome.Hsapiens.UCSC.hg38","MEDIPS"))' \
 	&& R -e 'library(remotes);remotes::install_github("oicr-gsi/modelTsne")' \
 	&& R -e 'library(remotes);remotes::install_github("jxu1234/MeDEStrand")'
