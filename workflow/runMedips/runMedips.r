@@ -10,7 +10,9 @@ runMedips.r --bamFile=FILE --outputDir=DIR --windowSize=SIZE
 --help               show this help text"
 opt <- docopt(doc)
 
-
+if (!file.exists(opt$bamFile)){
+  stop(paste0("ERROR: bam file not found ",opt$bamFile), call.=FALSE)
+}
 if (!file.exists(opt$outputDir)){
   dir.create(opt$outputDir)
 }
