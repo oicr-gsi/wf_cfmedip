@@ -51,6 +51,7 @@ RUN R -e 'install.packages(c("BiocManager","optparse","reshape2","remotes"))' \
 
 #Flag '--no-install-recommends' unsuitable for python as it skips installation of required libraries
 RUN apt-get install -y python3-pip \
+	&& pip3 install Cython \
 	&& pip3 install UMI-tools 
 
 #Does it prevent loss of $PATH in cluster?
