@@ -345,12 +345,12 @@ task runMedips{
   command{
     mkdir -p ~{outMedips}
     
-    Rscript /workflow/runMedips/runMedips.R \
+    r /workflow/runMedips/runMedips.r \
     --bamFile ~{bamFilterDedup} \
     --outputDir ~{outMedips} \
     --windowSize ~{windowSize}
     
-    Rscript /workflow/runMedips/runMedestrand.R \
+    r /workflow/runMedips/runMedestrand.r \
     --bamFile ~{bamFilterDedup} \
     --outputDir ~{outMedips} \
     --windowSize ~{windowSize}
