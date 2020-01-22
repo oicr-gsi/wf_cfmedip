@@ -1,17 +1,17 @@
 # wf-cfMeDIP
 Workflow for cfMeDIP data analysis using Docker and WDL
 
-![wf_cfmedip_overview](img/plot_wf_cfmedip_overview.png)
+![wf_cfmedip_overview](img/plot_wf_cfmedip_overview2.png)
 
 ## Installation
 **Option 1:**
-Download the pre-built image that is hosted in Docker Hub by executiong `docker pull oicrgsi/wf_cfmedip`.
+Download the pre-built image that is hosted in Docker Hub by executing `docker pull oicrgsi/wf_cfmedip`.
 
 **Option 2:**
 Download the contents of the repository by executing `git clone https://github.com/oicr-gsi/wf-cfMeDIP.git`, and then build the Docker image by running `docker build -t oicr-gsi/wf_cfmedip:latest wf-cfMeDIP/`; this process can take more than two hours.
 
 ## Workflow parameters
-| Parrameter  | Required/Optional | Description |
+| Parameter  | Required/Optional | Description |
 | --- | --- | --- |
 | --R1  | Required | fastq file mate 1 (.gz allowed) |
 | --R2  | Required | fastq file mate 2 (.gz allowed) |
@@ -73,8 +73,3 @@ docker run --rm -it -u $(id -u):$(id -g) \
 Developed by Alberto León at [Ontario Institute for Cancer Research / Genome Sequence Informatics team](https://oicr.on.ca/)
 
 [![OICR logo](img/OICR_logo.png)](https://oicr.on.ca)
-
-
-
-
-
