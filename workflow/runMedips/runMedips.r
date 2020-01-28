@@ -72,3 +72,13 @@ tryCatch({
 if(is.null(df.rms)){df.rms<-("#Error: MEDIPS CpG density normalization failed due to small number of reads")}
 write.table(df.rms,file.rms,row.names=F,quote=F,col.names=F)
 system(paste0("gzip -f ",file.rms))
+
+#CpG enrichment
+#    Performance can be improved, it currently performs a full MEDIPS run. 
+er <- MEDIPS.CpGenrich(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, chr.select=chr.select)
+df.er<-data.frame(matrix(unlist(er), nrow=length(1)))
+colnames(df.er)<-names(er)
+df.er<-cbind(sample=fname,df.er)
+file.er<-paste0(opt$outputDir,"/MEDIPS_hg38_",fname,"_CpGenrich.txt")
+write.table(df.er,file.er,row.names=F,quote=F,col.names=F)
+
