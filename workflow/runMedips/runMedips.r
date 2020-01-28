@@ -3,7 +3,6 @@ library(docopt)
 doc <- "Usage:
 test.r --bamFile <FILE> --outputDir <DIR> --windowSize <SIZE>
 runMedips.r --bamFile=FILE --outputDir=DIR --windowSize=SIZE
-
 --bamFile FILE       Aligned, sorted, filtered reads (bam) [default: ]
 --outputDir DIR      Path to output folder [default: ]
 --windowSize SIZE    Size of genomic windows (bp) [default: ]
@@ -74,11 +73,13 @@ write.table(df.rms,file.rms,row.names=F,quote=F,col.names=F)
 system(paste0("gzip -f ",file.rms))
 
 #CpG enrichment
-#    Performance can be improved, it currently performs a full MEDIPS run. 
-er <- MEDIPS.CpGenrich(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, chr.select=chr.select)
+#Performance can be improved, it currently generates its own MEDIPS.set (previously done!) 
+er <- MEDIPS.CpGenrich(file=opt$bamFile, BSgenome=BSgenome, extend=extend, shift=shift, uniq=uniq, chr.select=chr.select, paired=paired)
 df.er<-data.frame(matrix(unlist(er), nrow=length(1)))
 colnames(df.er)<-names(er)
 df.er<-cbind(sample=fname,df.er)
 file.er<-paste0(opt$outputDir,"/MEDIPS_hg38_",fname,"_CpGenrich.txt")
 write.table(df.er,file.er,row.names=F,quote=F,col.names=F)
+
+
 
