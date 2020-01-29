@@ -35,14 +35,21 @@ RUN cd /home \
 	&& cd bwa-0.7.17 \
 	&& make \
 	&& cd /home && mv /home/bwa-0.7.17 /usr/lib/ && rm bwa-0.7.17.tar.bz2
+	
+RUN cd /home \
+	&& wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/1.5.0/ncbi-magicblast-1.5.0-x64-linux.tar.gz \
+	&& tar -xvzf ncbi-magicblast-1.5.0-x64-linux.tar.gz \
+	&& cp ncbi-magicblast-1.5.0/bin/magicblast /usr/bin/ \
+	&& cp ncbi-magicblast-1.5.0/bin/makeblastdb /usr/bin/ \
+	&& rm -rf ncbi-magicblast-1.5.0-x64-linux.tar.gz
 
 RUN cd /home \
-	&& wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2 \
-	&& tar -xvjf samtools-1.9.tar.bz2 \
-	&& cd samtools-1.9 \
+	&& wget https://github.com/samtools/samtools/releases/download/1.10/samtools-1.10.tar.bz2 \
+	&& tar -xvjf samtools-1.10.tar.bz2 \
+	&& cd samtools-1.10 \
 	&& make && make install \
 	&& cd .. \
-	&& rm -rf samtools-1.9 && rm samtools-1.9.tar.bz2
+	&& rm -rf samtools-1.10 && rm samtools-1.10.tar.bz2
 
 RUN R -e 'install.packages(c("BiocManager","docopt","reshape2","remotes"))' \
 	&& R -e 'library(BiocManager);BiocManager::install(c("BSgenome.Hsapiens.UCSC.hg38","MEDIPS"))' \
@@ -52,7 +59,7 @@ RUN R -e 'install.packages(c("BiocManager","docopt","reshape2","remotes"))' \
 RUN apt-get install -y r-cran-littler
 
 #Flag '--no-install-recommends' unsuitable for python as it skips installation of required libraries
-#if installing from r-base:xxx, required: pip3 install Cyton
+#if installing from r-base:xxx, required: pip3 install Cython
 RUN apt-get install -y python3-pip \
 	&& pip3 install UMI-tools 
 
