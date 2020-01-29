@@ -16,6 +16,7 @@ workflow wf_cfmedip {
     String seqUmeth = "F24B22"
     Boolean useUMI = true
     Int windowSize = 200
+    Int threads = 4
   }
   
   String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "")
@@ -40,7 +41,8 @@ workflow wf_cfmedip {
       outputPath=outputPath,
       fname=fname,
       index=index,
-      aligner=aligner
+      aligner=aligner,
+      threads=threads
   }
   
   call filterBadAlignments{
@@ -150,18 +152,19 @@ task alignReads{
     String fname
     String outputPath
     String aligner
+    String threads
   }
   
   command{
     if [ "~{aligner}" == "bowtie2" ];then
-    bowtie2 -p 8 -x ~{index} \
+    bowtie2 -p ~{threads} -x ~{index} \
     -1 ~{extrR1} \
     -2 ~{extrR2} \
     -S ~{outputPath}/~{fname}.bowtie2.sam
     fi
     
     if [ "~{aligner}" == "gsnap" ];then
-    gsnap -t 8 -m 0.10 -A sam \
+    gsnap -t ~{threads} -m 0.10 -A sam \
     --gunzip --trim-mismatch-score=0 \
     -D $(dirname ~{index}) \
     -d $(basename ~{index}) \
@@ -171,7 +174,7 @@ task alignReads{
     fi
     
     if [ "~{aligner}" == "bwa" ];then
-    bwa mem -t 8 \
+    bwa mem -t ~{threads} \
     ~{index} \
     ~{extrR1} \
     ~{extrR2} \
@@ -185,7 +188,7 @@ task alignReads{
     -db $(dirname ~{index}) \
     -outfmt sam \
     -no_unaligned \
-    -num_threads 8 \
+    -num_threads ~{threads} \
     > ~{outputPath}/~{fname}.magic-blast.sam
     fi
 
