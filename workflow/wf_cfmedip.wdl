@@ -162,17 +162,7 @@ task alignReads{
     -2 ~{extrR2} \
     -S ~{outputPath}/~{fname}.bowtie2.sam
     fi
-    
-    if [ "~{aligner}" == "gsnap" ];then
-    gsnap -t ~{threads} -m 0.10 -A sam \
-    --gunzip --trim-mismatch-score=0 \
-    -D $(dirname ~{index}) \
-    -d $(basename ~{index}) \
-    ~{extrR1} \
-    ~{extrR2} \
-    > ~{outputPath}/~{fname}.gsnap.sam
-    fi
-    
+       
     if [ "~{aligner}" == "bwa" ];then
     bwa mem -t ~{threads} \
     ~{index} \
@@ -191,7 +181,6 @@ task alignReads{
     -num_threads ~{threads} \
     > ~{outputPath}/~{fname}.magic-blast.sam
     fi
-
     
     samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     
