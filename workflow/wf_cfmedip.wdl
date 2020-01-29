@@ -178,6 +178,18 @@ task alignReads{
     > ~{outputPath}/~{fname}.bwa.sam
     fi
     
+    if [ "~{aligner}" == "magic-blast" ];then
+    -query ~{extrR1} \
+    -query_mate ~{extrR2} \
+    -infmt fastq \
+    -db $(dirname ~{index}) \
+    -outfmt sam \
+    -no_unaligned \
+    -num_threads 8 \
+    > ~{outputPath}/~{fname}.magic-blast.sam
+    fi
+
+    
     samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     
     rm ~{outputPath}/~{fname}.~{aligner}.sam
