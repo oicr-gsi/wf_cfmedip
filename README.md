@@ -15,7 +15,7 @@ Download the contents of the repository by executing `git clone https://github.c
 | --- | --- | --- |
 | --R1  | Required | fastq file mate 1 (.gz allowed) |
 | --R2  | Required | fastq file mate 2 (.gz allowed) |
-| --aligner | Required | bowtie2 or bwa or gsnap |
+| --aligner | Required | bowtie2 or bwa or magic-blast |
 | --index | Required | genomic index pre-built for the selected aligner |
 | --fasta | Required | reference genomic sequence in fasta format |
 | --outputPath | Required | output folder |
