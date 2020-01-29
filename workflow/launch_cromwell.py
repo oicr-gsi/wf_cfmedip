@@ -15,7 +15,7 @@ optional = parser.add_argument_group('Optional arguments')
 
 required.add_argument("--R1", dest="R1", help="First mate Fastq file")
 required.add_argument("--R2", dest="R2", help="Second mate Fastq file")
-required.add_argument("--aligner", dest="aligner", help="bwa, bowtie2 or gsnap")
+required.add_argument("--aligner", dest="aligner", help="bwa, bowtie2 or magic-blast")
 required.add_argument("--indexPath", dest="indexPath", help="Genome index, including methylation control sequences (when appropriate)")
 required.add_argument("--fastaFile",dest="fastaFile",help="Reference genome sequence in fasta format, including methylation control sequences (when appropriate)")
 required.add_argument("--outputPath", dest="outputPath", help="Destination folder")
