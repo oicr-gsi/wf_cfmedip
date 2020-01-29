@@ -26,6 +26,7 @@ Download the contents of the repository by executing `git clone https://github.c
 | --seqUmeth | Optional | Name of sequence to be used as unmethylated control. Default = "F24B22" |
 | --useUMI | Optional | Do reads contain UMIs? Default = true |
 | --windowSize | Optional | MeDIPs window size parameter. Default = 200 |
+| --threads | Optional | Number of threads used by the aligner. Default = 4 |
 
 ## Example
 File structure containing the elements required by the workflow:
