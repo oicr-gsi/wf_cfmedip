@@ -23,13 +23,6 @@ RUN curl -L -o /usr/lib/picard.jar https://github.com/broadinstitute/picard/rele
 	&& curl -L -o /usr/lib/womtool.jar https://github.com/broadinstitute/cromwell/releases/download/47/womtool-47.jar
 
 RUN cd /home \
-	&& wget http://research-pub.gene.com/gmap/src/gmap-gsnap-2019-09-12.tar.gz \
-	&& tar xvzf gmap-gsnap-2019-09-12.tar.gz \
-	&& cd gmap-2019-09-12 \
-	&& ./configure && make && make install \
-	&& cd /home && rm -rf /home/gmap-2019-09-12 && rm /home/gmap-gsnap-2019-09-12.tar.gz
-
-RUN cd /home \
 	&& wget https://github.com/lh3/bwa/releases/download/v0.7.17/bwa-0.7.17.tar.bz2 \
 	&& tar -xvjf bwa-0.7.17.tar.bz2 \
 	&& cd bwa-0.7.17 \

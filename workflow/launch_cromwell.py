@@ -15,7 +15,7 @@ optional = parser.add_argument_group('Optional arguments')
 
 required.add_argument("--R1", dest="R1", help="First mate Fastq file")
 required.add_argument("--R2", dest="R2", help="Second mate Fastq file")
-required.add_argument("--aligner", dest="aligner", help="bwa, bowtie2 or gsnap")
+required.add_argument("--aligner", dest="aligner", help="bwa, bowtie2 or magic-blast")
 required.add_argument("--indexPath", dest="indexPath", help="Genome index, including methylation control sequences (when appropriate)")
 required.add_argument("--fastaFile",dest="fastaFile",help="Reference genome sequence in fasta format, including methylation control sequences (when appropriate)")
 required.add_argument("--outputPath", dest="outputPath", help="Destination folder")
@@ -29,6 +29,7 @@ optional.add_argument("--seqMeth", dest="seqMeth", help="Name of methylated cont
 optional.add_argument("--seqUmeth", dest="seqUmeth", help="Name of unmethylated control sequence (default=F24B22)")
 optional.add_argument("--useUMI", dest="useUMI", help="Do reads include UMI sequences? 'true' or 'false' (default=true)")
 optional.add_argument("--windowSize", dest="windowSize", help="Genomic window size (bp) (default=200)")
+optional.add_argument("--threads", dest="threads", help="Number of threads used by the aligner")
 
 args = parser.parse_args()
 
@@ -70,6 +71,8 @@ if bool(args.windowSize):
 if bool(args.sampleName):
   wf_inputs['wf_cfmedip.sampleName']=args.sampleName
 
+if bool(args.threads):
+  wf_inputs['wf_cfmedip.threads']=args.threads
 
 with open(outputPath+'/wf_cfmedip.inputs.json', 'w') as json_file:
   json.dump(wf_inputs,json_file,indent=4)
