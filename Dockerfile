@@ -52,9 +52,10 @@ RUN R -e 'install.packages(c("BiocManager","docopt","reshape2","remotes"))' \
 RUN apt-get install -y r-cran-littler
 
 #Flag '--no-install-recommends' unsuitable for python as it skips installation of required libraries
-#Required for building UMI-tools: pip3 install Cython
+#Required before UMI-tools(must be present in advance): pip3 install Cython
 RUN apt-get install -y python3-pip \
-	&& pip3 install Cython UMI-tools 
+	&& pip3 install Cython \
+	&& pip3 install UMI-tools 
 
 #Does it prevent loss of $PATH in cluster?
 RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" >> /etc/bash.bashrc \
