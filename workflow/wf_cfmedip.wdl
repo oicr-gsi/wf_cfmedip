@@ -172,7 +172,7 @@ task alignReads{
     fi
     
     if [ "~{aligner}" == "magic-blast" ];then
-    magic-blast \
+    magicblast \
     -query ~{extrR1} \
     -query_mate ~{extrR2} \
     -infmt fastq \
