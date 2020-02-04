@@ -155,12 +155,16 @@ task alignReads{
     String threads
   }
   
+  String bracketOpen="{"
+  String bracketClose="}"
+  
   command{
     if [ "~{aligner}" == "bowtie2" ];then
     bowtie2 -p ~{threads} -x ~{index} \
     -1 ~{extrR1} \
     -2 ~{extrR2} \
     -S ~{outputPath}/~{fname}.bowtie2.sam
+    samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     fi
        
     if [ "~{aligner}" == "bwa" ];then
@@ -169,21 +173,44 @@ task alignReads{
     ~{extrR1} \
     ~{extrR2} \
     > ~{outputPath}/~{fname}.bwa.sam
+    samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     fi
     
     if [ "~{aligner}" == "magic-blast" ];then
+    zcat ~{outputPath}/~{fname}.R1.fq.gz | split -l4000000 -d --suffix-length 5 --filter='pigz -p 4 > $FILE.gz' - ~{outputPath}/~{fname}.R1.fq.split
+    zcat ~{outputPath}/~{fname}.R2.fq.gz | split -l4000000 -d --suffix-length 5 --filter='pigz -p 4 > $FILE.gz' - ~{outputPath}/~{fname}.R2.fq.split
+    declare -a filesR1=(~{outputPath}/~{fname}.R1.fq.split*)
+    declare -a filesR2=(~{outputPath}/~{fname}.R2.fq.split*)
+
+    do_magicblast()~{bracketOpen}
     magicblast \
-    -query ~{extrR1} \
-    -query_mate ~{extrR2} \
+    -db ~{index} \
+    -query $1 \
+    -query_mate $2 \
     -infmt fastq \
-    -db $(dirname ~{index}) \
-    -outfmt sam \
-    -no_unaligned \
-    -num_threads ~{threads} \
-    > ~{outputPath}/~{fname}.magic-blast.sam
-    fi
+    -outfmt sam > ~{fname}.split$3.sam
+    ~{bracketClose}
     
-    samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    (
+    for f in $~{bracketOpen}!filesR1[@]~{bracketClose};do
+    ((i=i%~{threads}));((i++==0)) && wait
+    do_magicblast "$~{bracketOpen}filesR1[$f]~{bracketClose}" "$~{bracketOpen}filesR2[$f]~{bracketClose}" "$f" &
+    done && wait
+    )
+    
+    (for f in $~{bracketOpen}!filesR1[@]~{bracketClose};do
+    ((i=i%~{threads}));((i++==0)) && wait
+    samtools view -b ~{outputPath}/~{fname}.split$f.sam | samtools sort -o ~{outputPath}/~{fname}.split$f.bam &
+    done && wait
+    )
+    
+    cmd="samtools merge --threads ~{threads} ~{outputPath}/~{fname}.magic-blast.bam"  
+    for f in $~{bracketOpen}!filesR1[@]~{bracketClose}
+    do
+    cmd="$cmd ~{outputPath}/~{fname}.split$f.bam"
+    done
+    $cmd
+    fi
     
     rm ~{outputPath}/~{fname}.~{aligner}.sam
   }
