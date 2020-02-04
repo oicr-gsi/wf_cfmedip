@@ -50,7 +50,8 @@ workflow wf_cfmedip {
       bamFile=alignReads.bamFile,
       outputPath=outputPath,
       fname=fname,
-      aligner=aligner
+      aligner=aligner,
+      threads=threads
   }
   
   call removeDuplicates{
@@ -59,7 +60,8 @@ workflow wf_cfmedip {
       bamFilter=filterBadAlignments.bamFilter,
       outputPath=outputPath,
       fname=fname,
-      aligner=aligner
+      aligner=aligner,
+      threads=threads
   }
   
   call getBamMetrics{
@@ -78,7 +80,8 @@ workflow wf_cfmedip {
       fname=fname,
       aligner=aligner,
       seqMeth=seqMeth,
-      seqUmeth=seqUmeth
+      seqUmeth=seqUmeth,
+      threads=threads
   }
   
   call getFilterMetrics{
@@ -164,7 +167,7 @@ task alignReads{
     -1 ~{extrR1} \
     -2 ~{extrR2} \
     -S ~{outputPath}/~{fname}.bowtie2.sam
-    samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    samtools view --threads ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
        
@@ -174,7 +177,7 @@ task alignReads{
     ~{extrR1} \
     ~{extrR2} \
     > ~{outputPath}/~{fname}.bwa.sam
-    samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    samtools view --threads ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
     
@@ -232,15 +235,16 @@ task filterBadAlignments{
     String fname
     String outputPath
     String aligner
+    String threads
   }
   
   String bracketOpen="{"
   String bracketClose="}"
   
   command{
-    samtools view -b -F 260 ~{bamFile} -o ~{outputPath}/~{fname}.~{aligner}.filter1.bam
+    samtools view --threads ~{threads} -b -F 260 ~{bamFile} -o ~{outputPath}/~{fname}.~{aligner}.filter1.bam
     
-    samtools view ~{outputPath}/~{fname}.~{aligner}.filter1.bam \
+    samtools view --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter1.bam \
     | awk 'sqrt($9*$9)>119 && sqrt($9*$9)<501' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt
@@ -251,7 +255,7 @@ task filterBadAlignments{
     READ_LIST_FILE=~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt \
     FILTER=includeReadList
     
-    samtools view ~{outputPath}/~{fname}.~{aligner}.filter2.bam \
+    samtools view --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter2.bam \
     | awk '~{bracketOpen}read=$0;sub(/.*NM:i:/,X,$0);sub(/\t.*/,X,$0);if(int($0)>7)~{bracketOpen}print read~{bracketClose}~{bracketClose}' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter2.high_mismatch.txt
@@ -276,12 +280,11 @@ task removeDuplicates{
     String fname
     String outputPath
     String aligner
+    String threads
   }
   
   command{
     if [[ ~{useUMI} == true ]];then
-    samtools index ~{bamFilter}
-    
     umi_tools dedup --paired \
     -I ~{bamFilter} \
     -S ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
@@ -294,6 +297,8 @@ task removeDuplicates{
     ASSUME_SORTED=true \
     VALIDATION_STRINGENCY=SILENT \
     REMOVE_DUPLICATES=true
+    
+    samtools index --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam
     fi
   }
   
@@ -347,13 +352,14 @@ task parseMethControl{
     String aligner
     String? seqMeth
     String? seqUmeth
+    String threads
   }
   
   String bracketOpen="{"
   String bracketClose="}"
   
   command{
-    samtools view ~{bamFilterDedup} | cut -f 3 | sort | uniq -c | sort -nr | sed -e 's/^ *//;s/ /\t/' | awk 'OFS="\t" ~{bracketOpen}print $2,$1~{bracketClose}' | sort -n -k1,1 > ~{outputPath}/meth_ctrl.counts
+    samtools view --threads ~{threads} ~{bamFilterDedup} | cut -f 3 | sort | uniq -c | sort -nr | sed -e 's/^ *//;s/ /\t/' | awk 'OFS="\t" ~{bracketOpen}print $2,$1~{bracketClose}' | sort -n -k1,1 > ~{outputPath}/meth_ctrl.counts
     total=$(samtools view ~{bamFilterDedup} | wc -l)
     unmap=$(cat ~{outputPath}/meth_ctrl.counts | grep '^\*' | cut -f2); if [[ -z $unmap ]]; then unmap="0"; fi
     methyl=$(cat ~{outputPath}/meth_ctrl.counts | grep ~{seqMeth} | cut -f2); if [[ -z $methyl ]]; then methyl="0"; fi
