@@ -15,6 +15,7 @@ RUN apt-get update \
 		libssl-dev \
 		libxml2-dev \
 		nano \
+		pigz \
 		wget \
 		zlib1g-dev
 
