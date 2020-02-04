@@ -165,6 +165,7 @@ task alignReads{
     -2 ~{extrR2} \
     -S ~{outputPath}/~{fname}.bowtie2.sam
     samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
        
     if [ "~{aligner}" == "bwa" ];then
@@ -174,6 +175,7 @@ task alignReads{
     ~{extrR2} \
     > ~{outputPath}/~{fname}.bwa.sam
     samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
     
     if [ "~{aligner}" == "magic-blast" ];then
@@ -212,7 +214,6 @@ task alignReads{
     $cmd
     fi
     
-    rm ~{outputPath}/~{fname}.~{aligner}.sam
   }
   
   output{
