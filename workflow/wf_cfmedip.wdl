@@ -155,7 +155,7 @@ task alignReads{
     String fname
     String outputPath
     String aligner
-    String threads
+    Int threads
   }
   
   String bracketOpen="{"
@@ -235,7 +235,7 @@ task filterBadAlignments{
     String fname
     String outputPath
     String aligner
-    String threads
+    Int threads
   }
   
   String bracketOpen="{"
@@ -280,7 +280,7 @@ task removeDuplicates{
     String fname
     String outputPath
     String aligner
-    String threads
+    Int threads
   }
   
   command{
@@ -352,7 +352,7 @@ task parseMethControl{
     String aligner
     String? seqMeth
     String? seqUmeth
-    String threads
+    Int threads
   }
   
   String bracketOpen="{"
@@ -381,7 +381,7 @@ task runMedips{
     String fname
     String outputPath
     String aligner
-    String windowSize
+    Int windowSize
   }
   
   String outMedips=outputPath+'/runMedips'
