@@ -190,6 +190,7 @@ task alignReads{
     -query $1 \
     -query_mate $2 \
     -infmt fastq \
+    -max_intron_length 500 \
     -outfmt sam > ~{outputPath}/~{fname}.split$3.sam
     ~{bracketClose}
     
