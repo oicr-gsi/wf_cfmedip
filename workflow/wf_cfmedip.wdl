@@ -188,7 +188,7 @@ task alignReads{
     -query $1 \
     -query_mate $2 \
     -infmt fastq \
-    -outfmt sam > ~{fname}.split$3.sam
+    -outfmt sam > ~{outputPath}/~{fname}.split$3.sam
     ~{bracketClose}
     
     (
