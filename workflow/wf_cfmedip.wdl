@@ -212,6 +212,10 @@ task alignReads{
     cmd="$cmd ~{outputPath}/~{fname}.split$f.bam"
     done
     $cmd
+    
+    rm ~{fname}.split*
+    rm ~{fname}.R1.fq.split*
+    rm ~{fname}.R2.fq.split*
     fi
     
   }
