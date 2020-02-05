@@ -292,7 +292,7 @@ task removeDuplicates{
     umi_tools dedup --paired \
     -I ~{bamFilter} \
     -S ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
-    --output-stats=deduplicated 
+    --output-stats=~{outputPath}/UMI_tools 
     else
       java -jar /usr/lib/picard.jar MarkDuplicates \
     I=~{bamFilter} \
