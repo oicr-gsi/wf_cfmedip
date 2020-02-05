@@ -93,14 +93,6 @@ workflow wf_cfmedip {
       fname=fname
   }
   
-  call doPicardDedup{
-    input:
-      bamFilter=filterBadAlignments.bamFilter,
-      fname=fname,
-      outputPath=outputPath,
-      aligner=aligner
-  }
-  
   call runMedips{
     input:
       bamFilterDedup=removeDuplicates.bamFilterDedup,
@@ -436,30 +428,4 @@ task getFilterMetrics{
   }
 }
 
-task doPicardDedup{
-  input{
-    File bamFilter
-    String fname
-    String outputPath
-    String aligner
-  }
-  
-  String picardOut=outputPath+'/picard'
-  
-  command{
-    mkdir -p ~{picardOut}
-    
-    java -jar /usr/lib/picard.jar MarkDuplicates \
-    I=~{bamFilter} \
-    O=~{outputPath}/~{fname}.~{aligner}.filter.dedup-Picard.bam \
-    M=~{picardOut}/doPicardDedup.MarkDuplicates.metrics.txt \
-    ASSUME_SORTED=true \
-    VALIDATION_STRINGENCY=SILENT \
-    REMOVE_DUPLICATES=true
-  }
-  
-  output{
-    File filterPicardDedupMetrics=picardOut+"/doPicardDedup.MarkDuplicates.metrics.txt"
-  }
-}
 
