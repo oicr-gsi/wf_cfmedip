@@ -277,13 +277,13 @@ task removeDuplicates{
     umi_tools dedup --paired \
     -I ~{bamFilter} \
     -S ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
-    --output-stats=~{outputPath}/metrics/UMI_tools 
+    --output-stats=~{outputPath}/metrics/removeDuplicates-UMI_tools 
     
     else
     java -jar /usr/lib/picard.jar MarkDuplicates \
     I=~{bamFilter} \
     O=~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
-    M=~{outputPath}/metrics/~{fname}.~{aligner}.filtered.dedup-statsPicard.txt \
+    M=~{outputPath}/metrics/removeDuplicates-statsPicard.txt \
     ASSUME_SORTED=true \
     VALIDATION_STRINGENCY=SILENT \
     REMOVE_DUPLICATES=true
@@ -319,7 +319,7 @@ task getBamMetrics{
     PROGRAM=CollectInsertSizeMetrics \
     R=~{fasta} \
     I=~{bamFilterDedup} \
-    O=~{picardOut}/ \
+    O=~{picardOut} \
     VALIDATION_STRINGENCY=SILENT    
   }
   
