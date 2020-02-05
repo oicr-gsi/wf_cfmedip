@@ -8,6 +8,7 @@ RUN apt-get update \
 		bzip2 \
 		curl \
 		default-jre \
+		fastp \
 		libbz2-dev \
 		libcurl4-openssl-dev \
 		liblzma-dev \
