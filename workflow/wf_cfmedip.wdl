@@ -17,6 +17,7 @@ workflow wf_cfmedip {
     Boolean useUMI = true
     Int windowSize = 200
     Int threads = 4
+    Int newReadLength = -1
   }
   
   String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "")
@@ -31,7 +32,8 @@ workflow wf_cfmedip {
       outputPath=outputPath,
       fname=fname,
       patternUMI=patternUMI,
-      patternUMI2=patternUMI2
+      patternUMI2=patternUMI2,
+      newReadLength=newReadLength
   }
   
   call alignReads {
@@ -106,6 +108,7 @@ task extractUMI {
     String fname
     String patternUMI
     String patternUMI2
+    Int newReadLength
   }
   
   command{
@@ -119,10 +122,30 @@ task extractUMI {
     --read2-in=~{R2} \
     -S ~{outputPath}/~{fname}.R1.fq.gz \
     --read2-out=~{outputPath}/~{fname}.R2.fq.gz \
-    -L ~{outputPath}/metrics/extractUMI.log \
+    -L ~{outputPath}/metrics/extractUMI.log
+    
     else
-      cp ~{R1} ~{outputPath}/~{fname}.R1.fq.gz
+    cp ~{R1} ~{outputPath}/~{fname}.R1.fq.gz
     cp ~{R2} ~{outputPath}/~{fname}.R2.fq.gz
+    
+    fi
+    
+    if [[ ~{newReadLength} != -1 ]];then
+    fastp \
+    --max_len1 ~{newReadLength} \
+    --max_len2 ~{newReadLength} \
+    -i ~{outputPath}/~{fname}.R1.fq.gz \
+    -I ~{outputPath}/~{fname}.R2.fq.gz \
+    -o ~{outputPath}/~{fname}.R1_trim.fq.gz \
+    -O ~{outputPath}/~{fname}.R2_trim.fq.gz \
+    --disable_adapter_trimming \
+    --disable_trim_poly_g \
+    --disable_quality_filtering \
+    --json ~{outputPath}/metrics/fastp_trim.json \
+    --html /dev/null
+    
+    mv -f ~{outputPath}/~{fname}.R1_trim.fq.gz ~{outputPath}/~{fname}.R1.fq.gz
+    mv -f ~{outputPath}/~{fname}.R2_trim.fq.gz ~{outputPath}/~{fname}.R2.fq.gz
     fi
   }
   
