@@ -109,15 +109,17 @@ task extractUMI {
   }
   
   command{
-    mkdir -p $(dirname ~{outputPath})
+    mkdir -p ~{outputPath}
+    mkdir -p ~{outputPath}/metrics
     
     if [[ ~{useUMI} == true ]];then  
     umi_tools extract --extract-method=string \
-    --bc-pattern=~{patternUMI} --bc-pattern2=~{patternUMI2} -L extract.log \
+    --bc-pattern=~{patternUMI} --bc-pattern2=~{patternUMI2} \
     -I ~{R1} \
     --read2-in=~{R2} \
     -S ~{outputPath}/~{fname}.R1.fq.gz \
-    --read2-out=~{outputPath}/~{fname}.R2.fq.gz
+    --read2-out=~{outputPath}/~{fname}.R2.fq.gz \
+    -L ~{outputPath}/metrics/extractUMI.log \
     else
       cp ~{R1} ~{outputPath}/~{fname}.R1.fq.gz
     cp ~{R2} ~{outputPath}/~{fname}.R2.fq.gz
@@ -275,13 +277,13 @@ task removeDuplicates{
     umi_tools dedup --paired \
     -I ~{bamFilter} \
     -S ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
-    --output-stats=~{outputPath}/UMI_tools 
+    --output-stats=~{outputPath}/metrics/UMI_tools 
     
     else
     java -jar /usr/lib/picard.jar MarkDuplicates \
     I=~{bamFilter} \
     O=~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
-    M=~{outputPath}/~{fname}.~{aligner}.filtered.dedup-statsPicard.txt \
+    M=~{outputPath}/metrics/~{fname}.~{aligner}.filtered.dedup-statsPicard.txt \
     ASSUME_SORTED=true \
     VALIDATION_STRINGENCY=SILENT \
     REMOVE_DUPLICATES=true
@@ -343,19 +345,19 @@ task parseMethControl{
   String bracketClose="}"
   
   command{
-    samtools view -@ ~{threads} ~{bamFilterDedup} | cut -f 3 | sort | uniq -c | sort -nr | sed -e 's/^ *//;s/ /\t/' | awk 'OFS="\t" ~{bracketOpen}print $2,$1~{bracketClose}' | sort -n -k1,1 > ~{outputPath}/meth_ctrl.counts
+    samtools view -@ ~{threads} ~{bamFilterDedup} | cut -f 3 | sort | uniq -c | sort -nr | sed -e 's/^ *//;s/ /\t/' | awk 'OFS="\t" ~{bracketOpen}print $2,$1~{bracketClose}' | sort -n -k1,1 > ~{outputPath}/metrics/meth_ctrl.counts
     total=$(samtools view -@ ~{threads} ~{bamFilterDedup} | wc -l)
     unmap=$(cat ~{outputPath}/meth_ctrl.counts | grep '^\*' | cut -f2); if [[ -z $unmap ]]; then unmap="0"; fi
     methyl=$(cat ~{outputPath}/meth_ctrl.counts | grep ~{seqMeth} | cut -f2); if [[ -z $methyl ]]; then methyl="0"; fi
     unmeth=$(cat ~{outputPath}/meth_ctrl.counts | grep ~{seqUmeth} | cut -f2); if [[ -z $unmeth ]]; then unmeth="0"; fi
     pct_meth_ctrl=$(echo "scale=3; ($methyl + $unmeth)/$total * 100" | bc -l); if [[ -z $pct_meth_ctrl ]]; then pct_meth_ctrl="0"; fi
     bet_meth_ctrl=$(echo "scale=3; $methyl/($methyl + $unmeth)" | bc -l); if [[ -z $bet_meth_ctrl ]]; then bet_meth_ctrl="0"; fi
-    echo -e "total\tunmap\tmethyl\tunmeth\tPCT_METH_CTRL\tMETH_CTRL_BETA" > ~{outputPath}/meth_ctrl_summary.txt
-    echo -e "$total\t$unmap\t$methyl\t$unmeth\t$pct_meth_ctrl\t$bet_meth_ctrl" >> ~{outputPath}/meth_ctrl_summary.txt
+    echo -e "total\tunmap\tmethyl\tunmeth\tPCT_METH_CTRL\tMETH_CTRL_BETA" > ~{outputPath}/metrics/meth_ctrl_summary.txt
+    echo -e "$total\t$unmap\t$methyl\t$unmeth\t$pct_meth_ctrl\t$bet_meth_ctrl" >> ~{outputPath}/metrics/meth_ctrl_summary.txt
   }
   
   output{
-    File methCtrlSummary=outputPath+"/meth_ctrl_summary.txt"
+    File methCtrlSummary=outputPath+"/metrics/meth_ctrl_summary.txt"
   }
 }
 
