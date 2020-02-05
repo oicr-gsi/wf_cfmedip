@@ -342,7 +342,7 @@ task getBamMetrics{
   }
   
   output{
-    File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
+    #File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
     File picardGcBiasMetrics=picardOut+'/'+fname+'.'+aligner+'.gc_bias_metrics.txt'
   }
   
