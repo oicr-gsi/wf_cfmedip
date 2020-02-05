@@ -217,9 +217,9 @@ task alignReads{
     done
     $cmd
     
-    rm ~{fname}.split*
-    rm ~{fname}.R1.fq.split*
-    rm ~{fname}.R2.fq.split*
+    bash -c 'rm ~{outputPath}/~{fname}.split*'
+    bash -c 'rm ~{outputPath}/~{fname}.R1.fq.split*'
+    bash -c 'rm ~{outputPath}/~{fname}.R2.fq.split*'
     fi
     
   }
@@ -283,8 +283,12 @@ task removeDuplicates{
     Int threads
   }
   
-  command{
+  #index bamFilter required by umi_tools; index filtered.dedup.bam for alignment visualization
+  
+  command{   
     if [[ ~{useUMI} == true ]];then
+    samtools index --threads ~{threads} ~{bamFilter}
+    
     umi_tools dedup --paired \
     -I ~{bamFilter} \
     -S ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
