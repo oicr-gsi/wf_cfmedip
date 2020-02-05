@@ -150,7 +150,7 @@ task alignReads{
     -1 ~{extrR1} \
     -2 ~{extrR2} \
     -S ~{outputPath}/~{fname}.bowtie2.sam
-    samtools view --threads ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    samtools view -@ ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
        
@@ -160,7 +160,7 @@ task alignReads{
     ~{extrR1} \
     ~{extrR2} \
     > ~{outputPath}/~{fname}.bwa.sam
-    samtools view --threads ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    samtools view -@ ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
     rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
     
@@ -193,7 +193,7 @@ task alignReads{
     done && wait
     )
     
-    cmd="samtools merge --threads ~{threads} ~{outputPath}/~{fname}.magic-blast.bam"  
+    cmd="samtools merge -@ ~{threads} ~{outputPath}/~{fname}.magic-blast.bam"  
     for f in $~{bracketOpen}!filesR1[@]~{bracketClose}
     do
     cmd="$cmd ~{outputPath}/~{fname}.split$f.bam"
@@ -225,9 +225,9 @@ task filterBadAlignments{
   String bracketClose="}"
   
   command{
-    samtools view --threads ~{threads} -b -F 260 ~{bamFile} -o ~{outputPath}/~{fname}.~{aligner}.filter1.bam
+    samtools view -@ ~{threads} -b -F 260 ~{bamFile} -o ~{outputPath}/~{fname}.~{aligner}.filter1.bam
     
-    samtools view --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter1.bam \
+    samtools view -@ ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter1.bam \
     | awk 'sqrt($9*$9)>119 && sqrt($9*$9)<501' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt
@@ -238,7 +238,7 @@ task filterBadAlignments{
     READ_LIST_FILE=~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt \
     FILTER=includeReadList
     
-    samtools view --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter2.bam \
+    samtools view -@ ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter2.bam \
     | awk '~{bracketOpen}read=$0;sub(/.*NM:i:/,X,$0);sub(/\t.*/,X,$0);if(int($0)>7)~{bracketOpen}print read~{bracketClose}~{bracketClose}' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter2.high_mismatch.txt
