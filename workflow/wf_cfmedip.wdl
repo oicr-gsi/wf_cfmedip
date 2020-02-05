@@ -406,7 +406,6 @@ task runMedips{
   output{
     File medipsCount=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_count.gz'
     File medipsRms=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_rms.gz'
-    File medipsCpGEnrich=outMedips+'/MEDIPS_hg38_'+fname+'_CpGenrich.txt'
     File medestrandWig=outMedips+'/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'_wig.bed.gz'
   }
 }
