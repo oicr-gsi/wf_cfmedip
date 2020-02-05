@@ -279,7 +279,7 @@ task removeDuplicates{
   
   command{   
     if [[ ~{useUMI} == true ]];then
-    samtools index --threads ~{threads} ~{bamFilter}
+    samtools index -@ ~{threads} ~{bamFilter}
     
     umi_tools dedup --paired \
     -I ~{bamFilter} \
@@ -297,7 +297,7 @@ task removeDuplicates{
     
     fi
     
-    samtools index --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam
+    samtools index -@ ~{threads} ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam
   }
   
   output{
