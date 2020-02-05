@@ -8,6 +8,7 @@ RUN apt-get update \
 		bzip2 \
 		curl \
 		default-jre \
+		fastp \
 		libbz2-dev \
 		libcurl4-openssl-dev \
 		liblzma-dev \
@@ -15,6 +16,7 @@ RUN apt-get update \
 		libssl-dev \
 		libxml2-dev \
 		nano \
+		pigz \
 		wget \
 		zlib1g-dev
 

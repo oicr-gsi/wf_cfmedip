@@ -11,7 +11,7 @@ Download the pre-built image that is hosted in Docker Hub by executing `docker p
 Download the contents of the repository by executing `git clone https://github.com/oicr-gsi/wf-cfMeDIP.git`, and then build the Docker image by running `docker build -t oicr-gsi/wf_cfmedip:latest wf-cfMeDIP/`; this process can take more than two hours.
 
 ## Workflow parameters
-| Parameter  | Required/Optional | Description |
+| Parameter  | Required / Optional | Description |
 | --- | --- | --- |
 | --R1  | Required | fastq file mate 1 (.gz allowed) |
 | --R2  | Required | fastq file mate 2 (.gz allowed) |
@@ -25,6 +25,7 @@ Download the contents of the repository by executing `git clone https://github.c
 | --seqMeth | Optional | Name of sequence to be used as methylated control. Default = "F19K16" |
 | --seqUmeth | Optional | Name of sequence to be used as unmethylated control. Default = "F24B22" |
 | --useUMI | Optional | Do reads contain UMIs? Default = true |
+| --newReadLen | Optional | fastp --max_len1 and --max_len2. Default = -1 (trimming disabled) |
 | --windowSize | Optional | MeDIPs window size parameter. Default = 200 |
 | --threads | Optional | Number of threads used by the aligner. Default = 4 |
 

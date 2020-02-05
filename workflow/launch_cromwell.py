@@ -30,6 +30,7 @@ optional.add_argument("--seqUmeth", dest="seqUmeth", help="Name of unmethylated 
 optional.add_argument("--useUMI", dest="useUMI", help="Do reads include UMI sequences? 'true' or 'false' (default=true)")
 optional.add_argument("--windowSize", dest="windowSize", help="Genomic window size (bp) (default=200)")
 optional.add_argument("--threads", dest="threads", help="Number of threads used by the aligner")
+optional.add_argument("--newReadLen", dest="newReadLen", help="fastp --max_len1 and --max_len2. Default = -1 (trimming disabled)")
 
 args = parser.parse_args()
 
@@ -73,6 +74,9 @@ if bool(args.sampleName):
 
 if bool(args.threads):
   wf_inputs['wf_cfmedip.threads']=args.threads
+
+if bool(args.newReadLen):
+  wf_inputs['wf_cfmedip.newReadLen']=args.newReadLen
 
 with open(outputPath+'/wf_cfmedip.inputs.json', 'w') as json_file:
   json.dump(wf_inputs,json_file,indent=4)

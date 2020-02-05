@@ -17,7 +17,6 @@ workflow wf_cfmedip {
     Boolean useUMI = true
     Int windowSize = 200
     Int threads = 4
-    Int newReadLen = -1
   }
   
   String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "")
@@ -32,8 +31,7 @@ workflow wf_cfmedip {
       outputPath=outputPath,
       fname=fname,
       patternUMI=patternUMI,
-      patternUMI2=patternUMI2,
-      newReadLen=newReadLen
+      patternUMI2=patternUMI2
   }
   
   call alignReads {
@@ -52,8 +50,7 @@ workflow wf_cfmedip {
       bamFile=alignReads.bamFile,
       outputPath=outputPath,
       fname=fname,
-      aligner=aligner,
-      threads=threads
+      aligner=aligner
   }
   
   call removeDuplicates{
@@ -62,8 +59,7 @@ workflow wf_cfmedip {
       bamFilter=filterBadAlignments.bamFilter,
       outputPath=outputPath,
       fname=fname,
-      aligner=aligner,
-      threads=threads
+      aligner=aligner
   }
   
   call getBamMetrics{
@@ -82,8 +78,24 @@ workflow wf_cfmedip {
       fname=fname,
       aligner=aligner,
       seqMeth=seqMeth,
-      seqUmeth=seqUmeth,
-      threads=threads
+      seqUmeth=seqUmeth
+  }
+  
+  call getFilterMetrics{
+    input:
+      extrR1=extractUMI.extrR1,
+      bamFilterDedup=removeDuplicates.bamFilterDedup,
+      outputPath=outputPath,
+      aligner=aligner,
+      fname=fname
+  }
+  
+  call doPicardDedup{
+    input:
+      bamFilter=filterBadAlignments.bamFilter,
+      fname=fname,
+      outputPath=outputPath,
+      aligner=aligner
   }
   
   call runMedips{
@@ -108,44 +120,21 @@ task extractUMI {
     String fname
     String patternUMI
     String patternUMI2
-    Int newReadLen
   }
   
   command{
-    mkdir -p ~{outputPath}
-    mkdir -p ~{outputPath}/metrics
+    mkdir -p $(dirname ~{outputPath})
     
     if [[ ~{useUMI} == true ]];then  
     umi_tools extract --extract-method=string \
-    --bc-pattern=~{patternUMI} --bc-pattern2=~{patternUMI2} \
+    --bc-pattern=~{patternUMI} --bc-pattern2=~{patternUMI2} -L extract.log \
     -I ~{R1} \
     --read2-in=~{R2} \
     -S ~{outputPath}/~{fname}.R1.fq.gz \
-    --read2-out=~{outputPath}/~{fname}.R2.fq.gz \
-    -L ~{outputPath}/metrics/extractUMI.log
-    
+    --read2-out=~{outputPath}/~{fname}.R2.fq.gz
     else
-    cp ~{R1} ~{outputPath}/~{fname}.R1.fq.gz
+      cp ~{R1} ~{outputPath}/~{fname}.R1.fq.gz
     cp ~{R2} ~{outputPath}/~{fname}.R2.fq.gz
-    
-    fi
-    
-    if [[ ~{newReadLen} != -1 ]];then
-    fastp \
-    --max_len1 ~{newReadLen} \
-    --max_len2 ~{newReadLen} \
-    -i ~{outputPath}/~{fname}.R1.fq.gz \
-    -I ~{outputPath}/~{fname}.R2.fq.gz \
-    -o ~{outputPath}/~{fname}.R1_trim.fq.gz \
-    -O ~{outputPath}/~{fname}.R2_trim.fq.gz \
-    --disable_adapter_trimming \
-    --disable_trim_poly_g \
-    --disable_quality_filtering \
-    --json ~{outputPath}/metrics/fastp_trim.json \
-    --html /dev/null
-    
-    mv -f ~{outputPath}/~{fname}.R1_trim.fq.gz ~{outputPath}/~{fname}.R1.fq.gz
-    mv -f ~{outputPath}/~{fname}.R2_trim.fq.gz ~{outputPath}/~{fname}.R2.fq.gz
     fi
   }
   
@@ -163,11 +152,8 @@ task alignReads{
     String fname
     String outputPath
     String aligner
-    Int threads
+    String threads
   }
-  
-  String bracketOpen="{"
-  String bracketClose="}"
   
   command{
     if [ "~{aligner}" == "bowtie2" ];then
@@ -175,8 +161,6 @@ task alignReads{
     -1 ~{extrR1} \
     -2 ~{extrR2} \
     -S ~{outputPath}/~{fname}.bowtie2.sam
-    samtools view -@ ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
-    rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
        
     if [ "~{aligner}" == "bwa" ];then
@@ -185,51 +169,23 @@ task alignReads{
     ~{extrR1} \
     ~{extrR2} \
     > ~{outputPath}/~{fname}.bwa.sam
-    samtools view -@ ~{threads} -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
-    rm ~{outputPath}/~{fname}.~{aligner}.sam
     fi
     
     if [ "~{aligner}" == "magic-blast" ];then
-    zcat ~{outputPath}/~{fname}.R1.fq.gz | split -l4000000 -d --suffix-length 5 --filter='pigz -p 4 > $FILE.gz' - ~{outputPath}/~{fname}.R1.fq.split
-    zcat ~{outputPath}/~{fname}.R2.fq.gz | split -l4000000 -d --suffix-length 5 --filter='pigz -p 4 > $FILE.gz' - ~{outputPath}/~{fname}.R2.fq.split
-    declare -a filesR1=(~{outputPath}/~{fname}.R1.fq.split*)
-    declare -a filesR2=(~{outputPath}/~{fname}.R2.fq.split*)
-
-    do_magicblast()~{bracketOpen}
     magicblast \
-    -db ~{index} \
-    -query $1 \
-    -query_mate $2 \
+    -query ~{extrR1} \
+    -query_mate ~{extrR2} \
     -infmt fastq \
-    -max_intron_length 500 \
-    -outfmt sam > ~{outputPath}/~{fname}.split$3.sam
-    ~{bracketClose}
-    
-    (
-    for f in $~{bracketOpen}!filesR1[@]~{bracketClose};do
-    ((i=i%~{threads}));((i++==0)) && wait
-    do_magicblast "$~{bracketOpen}filesR1[$f]~{bracketClose}" "$~{bracketOpen}filesR2[$f]~{bracketClose}" "$f" &
-    done && wait
-    )
-    
-    (for f in $~{bracketOpen}!filesR1[@]~{bracketClose};do
-    ((i=i%~{threads}));((i++==0)) && wait
-    samtools view -b ~{outputPath}/~{fname}.split$f.sam | samtools sort -o ~{outputPath}/~{fname}.split$f.bam &
-    done && wait
-    )
-    
-    cmd="samtools merge -@ ~{threads} ~{outputPath}/~{fname}.magic-blast.bam"  
-    for f in $~{bracketOpen}!filesR1[@]~{bracketClose}
-    do
-    cmd="$cmd ~{outputPath}/~{fname}.split$f.bam"
-    done
-    $cmd
-    
-    bash -c 'rm ~{outputPath}/~{fname}.split*'
-    bash -c 'rm ~{outputPath}/~{fname}.R1.fq.split*'
-    bash -c 'rm ~{outputPath}/~{fname}.R2.fq.split*'
+    -db $(dirname ~{index}) \
+    -outfmt sam \
+    -no_unaligned \
+    -num_threads ~{threads} \
+    > ~{outputPath}/~{fname}.magic-blast.sam
     fi
     
+    samtools view -b ~{outputPath}/~{fname}.~{aligner}.sam | samtools sort -o ~{outputPath}/~{fname}.~{aligner}.bam
+    
+    rm ~{outputPath}/~{fname}.~{aligner}.sam
   }
   
   output{
@@ -243,16 +199,15 @@ task filterBadAlignments{
     String fname
     String outputPath
     String aligner
-    Int threads
   }
   
   String bracketOpen="{"
   String bracketClose="}"
   
   command{
-    samtools view -@ ~{threads} -b -F 260 ~{bamFile} -o ~{outputPath}/~{fname}.~{aligner}.filter1.bam
+    samtools view -b -F 260 ~{bamFile} -o ~{outputPath}/~{fname}.~{aligner}.filter1.bam
     
-    samtools view -@ ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter1.bam \
+    samtools view ~{outputPath}/~{fname}.~{aligner}.filter1.bam \
     | awk 'sqrt($9*$9)>119 && sqrt($9*$9)<501' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt
@@ -263,7 +218,7 @@ task filterBadAlignments{
     READ_LIST_FILE=~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt \
     FILTER=includeReadList
     
-    samtools view -@ ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter2.bam \
+    samtools view ~{outputPath}/~{fname}.~{aligner}.filter2.bam \
     | awk '~{bracketOpen}read=$0;sub(/.*NM:i:/,X,$0);sub(/\t.*/,X,$0);if(int($0)>7)~{bracketOpen}print read~{bracketClose}~{bracketClose}' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter2.high_mismatch.txt
@@ -288,32 +243,25 @@ task removeDuplicates{
     String fname
     String outputPath
     String aligner
-    Int threads
   }
   
-  #index bamFilter required by umi_tools; index filtered.dedup.bam for alignment visualization
-  
-  command{   
+  command{
     if [[ ~{useUMI} == true ]];then
-    samtools index -@ ~{threads} ~{bamFilter}
+    samtools index ~{bamFilter}
     
     umi_tools dedup --paired \
     -I ~{bamFilter} \
     -S ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
-    --output-stats=~{outputPath}/metrics/removeDuplicates-UMI_tools 
-    
+    --output-stats=deduplicated 
     else
-    java -jar /usr/lib/picard.jar MarkDuplicates \
+      java -jar /usr/lib/picard.jar MarkDuplicates \
     I=~{bamFilter} \
     O=~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
-    M=~{outputPath}/metrics/removeDuplicates-statsPicard.txt \
+    M=~{outputPath}/~{fname}.~{aligner}.filtered.dedup-statsPicard.txt \
     ASSUME_SORTED=true \
     VALIDATION_STRINGENCY=SILENT \
     REMOVE_DUPLICATES=true
-    
     fi
-    
-    samtools index -@ ~{threads} ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam
   }
   
   output{
@@ -337,18 +285,23 @@ task getBamMetrics{
     mkdir -p ~{picardOut}
     
     java -jar /usr/lib/picard.jar CollectMultipleMetrics \
-    PROGRAM=null \
-    PROGRAM=CollectGcBiasMetrics \
-    PROGRAM=CollectInsertSizeMetrics \
     R=~{fasta} \
     I=~{bamFilterDedup} \
-    O=~{picardOut}/picard \
-    VALIDATION_STRINGENCY=SILENT    
+    O=~{picardOut}/~{fname}.~{aligner} \
+    VALIDATION_STRINGENCY=SILENT
+    
+    java -jar /usr/lib/picard.jar CollectGcBiasMetrics \
+    R=~{fasta} \
+    I=~{bamFilterDedup} \
+    O=~{picardOut}/~{fname}.~{aligner}.gc_bias_metrics.txt \
+    S=~{picardOut}/~{fname}.~{aligner}.summary_gc_bias_metrics.txt \
+    CHART=~{picardOut}/~{fname}.~{aligner}.gc_bias_metrics.pdf  
+    
   }
   
   output{
-    File picardInsertSizeMetrics=picardOut+'/picard.insert_size_metrics'
-    File picardGcBiasMetrics=picardOut+'/picard.gc_bias.summary_metrics'
+    File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
+    File picardGcBiasMetrics=picardOut+'/'+fname+'.'+aligner+'.gc_bias_metrics.txt'
   }
   
 }
@@ -361,26 +314,25 @@ task parseMethControl{
     String aligner
     String? seqMeth
     String? seqUmeth
-    Int threads
   }
   
   String bracketOpen="{"
   String bracketClose="}"
   
   command{
-    samtools view -@ ~{threads} ~{bamFilterDedup} | cut -f 3 | sort | uniq -c | sort -nr | sed -e 's/^ *//;s/ /\t/' | awk 'OFS="\t" ~{bracketOpen}print $2,$1~{bracketClose}' | sort -n -k1,1 > ~{outputPath}/metrics/meth_ctrl.counts
-    total=$(samtools view -@ ~{threads} ~{bamFilterDedup} | wc -l)
+    samtools view ~{bamFilterDedup} | cut -f 3 | sort | uniq -c | sort -nr | sed -e 's/^ *//;s/ /\t/' | awk 'OFS="\t" ~{bracketOpen}print $2,$1~{bracketClose}' | sort -n -k1,1 > ~{outputPath}/meth_ctrl.counts
+    total=$(samtools view ~{bamFilterDedup} | wc -l)
     unmap=$(cat ~{outputPath}/meth_ctrl.counts | grep '^\*' | cut -f2); if [[ -z $unmap ]]; then unmap="0"; fi
     methyl=$(cat ~{outputPath}/meth_ctrl.counts | grep ~{seqMeth} | cut -f2); if [[ -z $methyl ]]; then methyl="0"; fi
     unmeth=$(cat ~{outputPath}/meth_ctrl.counts | grep ~{seqUmeth} | cut -f2); if [[ -z $unmeth ]]; then unmeth="0"; fi
     pct_meth_ctrl=$(echo "scale=3; ($methyl + $unmeth)/$total * 100" | bc -l); if [[ -z $pct_meth_ctrl ]]; then pct_meth_ctrl="0"; fi
     bet_meth_ctrl=$(echo "scale=3; $methyl/($methyl + $unmeth)" | bc -l); if [[ -z $bet_meth_ctrl ]]; then bet_meth_ctrl="0"; fi
-    echo -e "total\tunmap\tmethyl\tunmeth\tPCT_METH_CTRL\tMETH_CTRL_BETA" > ~{outputPath}/metrics/meth_ctrl_summary.txt
-    echo -e "$total\t$unmap\t$methyl\t$unmeth\t$pct_meth_ctrl\t$bet_meth_ctrl" >> ~{outputPath}/metrics/meth_ctrl_summary.txt
+    echo -e "total\tunmap\tmethyl\tunmeth\tPCT_METH_CTRL\tMETH_CTRL_BETA" > ~{outputPath}/meth_ctrl_summary.txt
+    echo -e "$total\t$unmap\t$methyl\t$unmeth\t$pct_meth_ctrl\t$bet_meth_ctrl" >> ~{outputPath}/meth_ctrl_summary.txt
   }
   
   output{
-    File methCtrlSummary=outputPath+"/metrics/meth_ctrl_summary.txt"
+    File methCtrlSummary=outputPath+"/meth_ctrl_summary.txt"
   }
 }
 
@@ -390,7 +342,7 @@ task runMedips{
     String fname
     String outputPath
     String aligner
-    Int windowSize
+    String windowSize
   }
   
   String outMedips=outputPath+'/runMedips'
@@ -409,10 +361,61 @@ task runMedips{
     --windowSize ~{windowSize}
   }
   output{
-    File medipsCount=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_count.txt.gz'
-    File medipsRms=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_rms.txt.gz'
+    File medipsCount=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_count.gz'
+    File medipsRms=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_rms.gz'
+    File medipsCpGEnrich=outMedips+'/MEDIPS_hg38_'+fname+'_CpGenrich.txt'
     File medestrandWig=outMedips+'/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'_wig.bed.gz'
   }
 }
 
+task getFilterMetrics{
+  input{
+    File extrR1
+    File bamFilterDedup
+    String outputPath
+    String aligner
+    String fname
+  }
+  
+  command{
+    total=`echo "$(gunzip -k -c ~{extrR1} | wc -l)/2" | bc`
+    filter1=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter1.bam | wc -l)
+    filter2=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter2.bam | wc -l)
+    filter3=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter3.bam | wc -l)
+    dedup=$(samtools view ~{bamFilterDedup} | wc -l)
+    echo -e "total\tfilter1\tfilter2\tfilter3\tdedup" > ~{outputPath}/filter_metrics.txt
+    echo -e "$total\t$filter1\t$filter2\t$filter3\t$dedup" >> ~{outputPath}/filter_metrics.txt
+  }
+  
+  output{
+    File filterMetrics=outputPath+"/filter_metrics.txt"
+  }
+}
+
+task doPicardDedup{
+  input{
+    File bamFilter
+    String fname
+    String outputPath
+    String aligner
+  }
+  
+  String picardOut=outputPath+'/picard'
+  
+  command{
+    mkdir -p ~{picardOut}
+    
+    java -jar /usr/lib/picard.jar MarkDuplicates \
+    I=~{bamFilter} \
+    O=~{outputPath}/~{fname}.~{aligner}.filter.dedup-Picard.bam \
+    M=~{picardOut}/doPicardDedup.MarkDuplicates.metrics.txt \
+    ASSUME_SORTED=true \
+    VALIDATION_STRINGENCY=SILENT \
+    REMOVE_DUPLICATES=true
+  }
+  
+  output{
+    File filterPicardDedupMetrics=picardOut+"/doPicardDedup.MarkDuplicates.metrics.txt"
+  }
+}
 
