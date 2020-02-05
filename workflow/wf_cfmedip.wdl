@@ -312,23 +312,18 @@ task getBamMetrics{
     mkdir -p ~{picardOut}
     
     java -jar /usr/lib/picard.jar CollectMultipleMetrics \
+    PROGRAM=null \
+    PROGRAM=CollectGcBiasMetrics \
+    PROGRAM=CollectInsertSizeMetrics \
     R=~{fasta} \
     I=~{bamFilterDedup} \
-    O=~{picardOut}/~{fname}.~{aligner} \
-    VALIDATION_STRINGENCY=SILENT
-    
-    java -jar /usr/lib/picard.jar CollectGcBiasMetrics \
-    R=~{fasta} \
-    I=~{bamFilterDedup} \
-    O=~{picardOut}/gc_bias_metrics.txt \
-    S=~{picardOut}/summary_gc_bias_metrics.txt \
-    CHART=~{picardOut}/gc_bias_metrics.pdf  
-    
+    O=~{picardOut}/ \
+    VALIDATION_STRINGENCY=SILENT    
   }
   
   output{
-    #File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
-    File picardGcBiasMetrics=picardOut+'/summary_gc_bias_metrics.txt.txt'
+    File picardInsertSizeMetrics=picardOut+'/insert_size_metrics'
+    File picardGcBiasMetrics=picardOut+'/gc_bias.summary_metrics'
   }
   
 }
