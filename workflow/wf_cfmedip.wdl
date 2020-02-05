@@ -17,7 +17,7 @@ workflow wf_cfmedip {
     Boolean useUMI = true
     Int windowSize = 200
     Int threads = 4
-    Int newReadLength = -1
+    Int newReadLen = -1
   }
   
   String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "")
@@ -33,7 +33,7 @@ workflow wf_cfmedip {
       fname=fname,
       patternUMI=patternUMI,
       patternUMI2=patternUMI2,
-      newReadLength=newReadLength
+      newReadLen=newReadLen
   }
   
   call alignReads {
@@ -108,7 +108,7 @@ task extractUMI {
     String fname
     String patternUMI
     String patternUMI2
-    Int newReadLength
+    Int newReadLen
   }
   
   command{
@@ -130,10 +130,10 @@ task extractUMI {
     
     fi
     
-    if [[ ~{newReadLength} != -1 ]];then
+    if [[ ~{newReadLen} != -1 ]];then
     fastp \
-    --max_len1 ~{newReadLength} \
-    --max_len2 ~{newReadLength} \
+    --max_len1 ~{newReadLen} \
+    --max_len2 ~{newReadLen} \
     -i ~{outputPath}/~{fname}.R1.fq.gz \
     -I ~{outputPath}/~{fname}.R2.fq.gz \
     -o ~{outputPath}/~{fname}.R1_trim.fq.gz \
