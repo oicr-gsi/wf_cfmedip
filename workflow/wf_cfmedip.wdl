@@ -293,8 +293,9 @@ task removeDuplicates{
     -I ~{bamFilter} \
     -S ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
     --output-stats=~{outputPath}/UMI_tools 
+    
     else
-      java -jar /usr/lib/picard.jar MarkDuplicates \
+    java -jar /usr/lib/picard.jar MarkDuplicates \
     I=~{bamFilter} \
     O=~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam \
     M=~{outputPath}/~{fname}.~{aligner}.filtered.dedup-statsPicard.txt \
@@ -302,8 +303,9 @@ task removeDuplicates{
     VALIDATION_STRINGENCY=SILENT \
     REMOVE_DUPLICATES=true
     
-    samtools index --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam
     fi
+    
+    samtools index --threads ~{threads} ~{outputPath}/~{fname}.~{aligner}.filtered.dedup.bam
   }
   
   output{
