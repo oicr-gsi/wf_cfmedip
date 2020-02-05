@@ -11,7 +11,7 @@ Download the pre-built image that is hosted in Docker Hub by executing `docker p
 Download the contents of the repository by executing `git clone https://github.com/oicr-gsi/wf-cfMeDIP.git`, and then build the Docker image by running `docker build -t oicr-gsi/wf_cfmedip:latest wf-cfMeDIP/`; this process can take more than two hours.
 
 ## Workflow parameters
-| Parameter  | Required/Optional | Description |
+| Parameter  | Required / Optional | Description |
 | --- | --- | --- |
 | --R1  | Required | fastq file mate 1 (.gz allowed) |
 | --R2  | Required | fastq file mate 2 (.gz allowed) |
