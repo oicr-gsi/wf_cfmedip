@@ -319,13 +319,13 @@ task getBamMetrics{
     PROGRAM=CollectInsertSizeMetrics \
     R=~{fasta} \
     I=~{bamFilterDedup} \
-    O=~{picardOut} \
+    O=~{picardOut}/picard \
     VALIDATION_STRINGENCY=SILENT    
   }
   
   output{
-    File picardInsertSizeMetrics=picardOut+'/insert_size_metrics'
-    File picardGcBiasMetrics=picardOut+'/gc_bias.summary_metrics'
+    File picardInsertSizeMetrics=picardOut+'/picard.insert_size_metrics'
+    File picardGcBiasMetrics=picardOut+'/picard.gc_bias.summary_metrics'
   }
   
 }
