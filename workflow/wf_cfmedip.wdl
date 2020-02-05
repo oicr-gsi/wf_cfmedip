@@ -84,15 +84,6 @@ workflow wf_cfmedip {
       threads=threads
   }
   
-  call getFilterMetrics{
-    input:
-      extrR1=extractUMI.extrR1,
-      bamFilterDedup=removeDuplicates.bamFilterDedup,
-      outputPath=outputPath,
-      aligner=aligner,
-      fname=fname
-  }
-  
   call runMedips{
     input:
       bamFilterDedup=removeDuplicates.bamFilterDedup,
@@ -329,15 +320,15 @@ task getBamMetrics{
     java -jar /usr/lib/picard.jar CollectGcBiasMetrics \
     R=~{fasta} \
     I=~{bamFilterDedup} \
-    O=~{picardOut}/~{fname}.~{aligner}.gc_bias_metrics.txt \
-    S=~{picardOut}/~{fname}.~{aligner}.summary_gc_bias_metrics.txt \
-    CHART=~{picardOut}/~{fname}.~{aligner}.gc_bias_metrics.pdf  
+    O=~{picardOut}/gc_bias_metrics.txt \
+    S=~{picardOut}/summary_gc_bias_metrics.txt \
+    CHART=~{picardOut}/gc_bias_metrics.pdf  
     
   }
   
   output{
     #File picardMultipleMetrics=picardOut+'/'+fname+'.'+aligner+'.alignment_summary_metrics'
-    File picardGcBiasMetrics=picardOut+'/'+fname+'.'+aligner+'.gc_bias_metrics.txt'
+    File picardGcBiasMetrics=picardOut+'/summary_gc_bias_metrics.txt.txt'
   }
   
 }
@@ -401,30 +392,6 @@ task runMedips{
     File medipsCount=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_count.txt.gz'
     File medipsRms=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_rms.txt.gz'
     File medestrandWig=outMedips+'/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'_wig.bed.gz'
-  }
-}
-
-task getFilterMetrics{
-  input{
-    File extrR1
-    File bamFilterDedup
-    String outputPath
-    String aligner
-    String fname
-  }
-  
-  command{
-    total=`echo "$(gunzip -k -c ~{extrR1} | wc -l)/2" | bc`
-    filter1=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter1.bam | wc -l)
-    filter2=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter2.bam | wc -l)
-    filter3=$(samtools view ~{outputPath}/~{fname}.~{aligner}.filter3.bam | wc -l)
-    dedup=$(samtools view ~{bamFilterDedup} | wc -l)
-    echo -e "total\tfilter1\tfilter2\tfilter3\tdedup" > ~{outputPath}/filter_metrics.txt
-    echo -e "$total\t$filter1\t$filter2\t$filter3\t$dedup" >> ~{outputPath}/filter_metrics.txt
-  }
-  
-  output{
-    File filterMetrics=outputPath+"/filter_metrics.txt"
   }
 }
 
