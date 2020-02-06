@@ -15,19 +15,25 @@ Download the contents of the repository by executing `git clone https://github.c
 | --- | --- | --- |
 | --R1  | Required | fastq file mate 1 (.gz allowed) |
 | --R2  | Required | fastq file mate 2 (.gz allowed) |
-| --aligner | Required | bowtie2 or bwa or magic-blast |
+| --aligner | Required | [bowtie2] or [bwa] (using bwa mem) or [magic-blast] |
 | --index | Required | genomic index pre-built for the selected aligner |
 | --fasta | Required | reference genomic sequence in fasta format |
 | --outputPath | Required | output folder |
 | --sampleName | Optional | labels files. If not provided, the filename from --R1 is used |
-| --patternUMI | Optional | UMI-tools patternUMI parameter. Default "NNNNN" |
-| --patternUMI2 | Optional | UMI-tools patternUMI2 parameter. Default = "NNNNN" |
-| --seqMeth | Optional | Name of sequence to be used as methylated control. Default = "F19K16" |
-| --seqUmeth | Optional | Name of sequence to be used as unmethylated control. Default = "F24B22" |
+| --patternUMI | Optional | [UMI-tools extract] --bc-pattern parameter. <br>Default "NNNNN" |
+| --patternUMI2 | Optional | [UMI-tools extract] --bc-pattern2 parameter. <br>Default = "NNNNN" |
+| --seqMeth | Optional | Name of sequence to be used as methylated control. <br>Default = "F19K16" |
+| --seqUmeth | Optional | Name of sequence to be used as unmethylated control. <br>Default = "F24B22" |
 | --useUMI | Optional | Do reads contain UMIs? Default = true |
-| --newReadLen | Optional | After UMI extraction, runs fastp --max_len1 and --max_len2. Default = -1 (trimming disabled) |
+| --newReadLen | Optional | After UMI extraction, runs [fastp] --max_len1 and --max_len2. <br>Default = -1 (trimming disabled) |
 | --windowSize | Optional | MeDIPs window size parameter. Default = 200 |
 | --threads | Optional | Number of threads used by the aligner. Default = 4 |
+
+[bowtie2]: https://github.com/BenLangmead/bowtie2/blob/master/README.md
+[bwa]: https://github.com/lh3/bwa/blob/master/README.md
+[magic-blast]: https://ncbi.github.io/magicblast/
+[UMI-tools extract]: https://umi-tools.readthedocs.io/en/latest/reference/extract.html
+[fastp]: https://github.com/OpenGene/fastp/blob/master/README.md#all-options
 
 ## Example
 File structure containing the elements required by the workflow:
