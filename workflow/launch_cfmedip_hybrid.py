@@ -31,22 +31,16 @@ optional.add_argument("--threads", dest="threads", help="Number of threads used 
 optional.add_argument("--newReadLen", dest="newReadLen", help="fastp --max_len1 and --max_len2. Default = -1 (trimming disabled)")
 
 args = parser.parse_args()
-
-R1=args.R1
-R2=args.R2
-aligner=args.aligner
-indexPath=args.indexPath
 outputPath=args.outputPath
-fastaFile=args.fastaFile
 
 os.makedirs(outputPath, exist_ok=True)
 
 wf_inputs = { 
-  'cfmedip_hybrid.R1':R1,
-  'cfmedip_hybrid.R2':R2,
-  'cfmedip_hybrid.indexMagicblast':indexMagicblast,
-  'cfmedip_hybrid.indexBowtie2':indexBowtie2,
-  'cfmedip_hybrid.fasta':fastaFile,
+  'cfmedip_hybrid.R1':args.R1,
+  'cfmedip_hybrid.R2':args.R2,
+  'cfmedip_hybrid.indexMagicblast':args.indexMagicblast,
+  'cfmedip_hybrid.indexBowtie2':args.indexBowtie2,
+  'cfmedip_hybrid.fasta':args.fastaFile,
   'cfmedip_hybrid.outputPath':outputPath}
 
 if bool(args.patternUMI):
@@ -82,9 +76,11 @@ with open(outputPath+'/cfmedip_hybrid.inputs.json', 'w') as json_file:
 
 #-Duser.dir sets java's working directory, used by cromwell to store execution files (without this, cromwell may use the user's home directory)
 cmd = ['java','-Xmx1g','-Duser.dir=/cromwell','-jar','/usr/lib/cromwell.jar',
-      'run','/TGL/gsi/data/iScan/cfMeDIP/cfmedip_hybrid.wdl',
-      #'run','/workflow/cfmedip_hybrid.wdl',
-      '-i',outputPath+'/cfmedip_hybrid.inputs.json'
+      'run',
+      '-i',outputPath+'/cfmedip_hybrid.inputs.json',
+      '/TGL/gsi/data/iScan/cfMeDIP/workflow/cfmedip_hybrid.wdl'
+      #'run','/workflow/cfmedip_hybrid.wdl'
+      
       ]
 
 print(cmd)
