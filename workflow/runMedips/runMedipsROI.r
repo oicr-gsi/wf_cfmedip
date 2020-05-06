@@ -75,5 +75,6 @@ RPK<-ROI.counts/((ROI$end-ROI$start)*0.001)
 CPM<-RPK/(sum(RPK)*0.000001)
 
 ROI.signal<-data.frame(name=ROI$name,count=ROI.counts,CPM=CPM)
+row.names(ROI.signal)<-NULL
 fname<-paste0(opt$outputDir,"/",sample.name,"_",ROI.name,"_CPM.RData")    
 save(ROI.signal,file=fname,compress=TRUE)
