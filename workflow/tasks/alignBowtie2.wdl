@@ -15,9 +15,6 @@ task alignBowtie2{
   
   String aligner="bowtie2"
   
-  String bracketOpen="{"
-  String bracketClose="}"
-  
   command{
     
     bowtie2 -p ~{threads} -x ~{indexBowtie2} \
