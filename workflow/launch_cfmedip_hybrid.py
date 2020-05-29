@@ -14,7 +14,7 @@ optional = parser.add_argument_group('Optional arguments')
 required.add_argument("--R1", dest="R1", help="First mate Fastq file")
 required.add_argument("--R2", dest="R2", help="Second mate Fastq file")
 required.add_argument("--indexMagicblast", dest="indexMagicblast", help="Genome index built for Magic-blast, including methylation control sequences (when appropriate)")
-required.add_argument("--indexBowtie2", dest="indexBowtie2", help="Genome index built for Bowtie2, including methylation control sequences (when appropriate)")
+required.add_argument("--indexBwa", dest="indexBwa", help="Genome index built for Bwa, including methylation control sequences (when appropriate)")
 required.add_argument("--fastaFile",dest="fastaFile",help="Reference genome sequence in fasta format, including methylation control sequences (when appropriate)")
 required.add_argument("--outputPath", dest="outputPath", help="Destination folder")
 
@@ -39,7 +39,7 @@ wf_inputs = {
   'cfmedip_hybrid.R1':args.R1,
   'cfmedip_hybrid.R2':args.R2,
   'cfmedip_hybrid.indexMagicblast':args.indexMagicblast,
-  'cfmedip_hybrid.indexBowtie2':args.indexBowtie2,
+  'cfmedip_hybrid.indexBwa':args.indexBwa,
   'cfmedip_hybrid.fasta':args.fastaFile,
   'cfmedip_hybrid.outputPath':outputPath}
 
@@ -78,9 +78,7 @@ with open(outputPath+'/cfmedip_hybrid.inputs.json', 'w') as json_file:
 cmd = ['java','-Xmx1g','-Duser.dir=/cromwell','-jar','/usr/lib/cromwell.jar',
       'run',
       '-i',outputPath+'/cfmedip_hybrid.inputs.json',
-      '/TGL/gsi/data/iScan/cfMeDIP/workflow/cfmedip_hybrid.wdl'
-      #'run','/workflow/cfmedip_hybrid.wdl'
-      
+      '/workflow/cfmedip_hybrid.wdl'
       ]
 
 print(cmd)
