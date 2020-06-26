@@ -28,6 +28,7 @@ Download the contents of the repository by executing `git clone https://github.c
 | --newReadLen | Optional | After UMI extraction, runs [fastp] --max_len1 and --max_len2. <br>Default = -1 (trimming disabled) |
 | --windowSize | Optional | MeDIPs window size parameter. Default = 200 |
 | --threads | Optional | Number of threads used by the aligner. Default = 4 |
+| --useMedestrand | Optional | Perform MeDEStrand analysis. Default = false |
 
 [bowtie2]: https://github.com/BenLangmead/bowtie2/blob/master/README.md
 [bwa]: https://github.com/lh3/bwa/blob/master/README.md
