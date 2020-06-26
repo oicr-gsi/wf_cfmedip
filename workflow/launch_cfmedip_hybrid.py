@@ -29,6 +29,8 @@ optional.add_argument("--useUMI", dest="useUMI", help="Do reads include UMI sequ
 optional.add_argument("--windowSize", dest="windowSize", help="Genomic window size (bp) (default=200)")
 optional.add_argument("--threads", dest="threads", help="Number of threads used by the aligner")
 optional.add_argument("--newReadLen", dest="newReadLen", help="fastp --max_len1 and --max_len2. Default = -1 (trimming disabled)")
+optional.add_argument("--useMedestrand", dest="useMedestrand", help="Perform MeDEStrand analysis? 'true' or 'false' (default = false)")
+optional.add_argument("--ROIFile", dest="ROIFile", help="File with regions of interest for MeDIPs. Default = /data/UCSC-hg38-CpG.bed")
 
 args = parser.parse_args()
 outputPath=args.outputPath
@@ -70,6 +72,12 @@ if bool(args.threads):
 if bool(args.newReadLen):
   wf_inputs['cfmedip_hybrid.newReadLen']=args.newReadLen
 
+if bool(args.useMedestrand):
+  wf_inputs['cfmedip_bwa.useMedestrand']=args.useMedestrand
+
+if bool(args.ROIFile):
+  wf_inputs['cfmedip_bwa.useROIFile']=args.ROIFile
+
 with open(outputPath+'/cfmedip_hybrid.inputs.json', 'w') as json_file:
   json.dump(wf_inputs,json_file,indent=4)
 
@@ -78,7 +86,9 @@ with open(outputPath+'/cfmedip_hybrid.inputs.json', 'w') as json_file:
 cmd = ['java','-Xmx1g','-Duser.dir=/cromwell','-jar','/usr/lib/cromwell.jar',
       'run',
       '-i',outputPath+'/cfmedip_hybrid.inputs.json',
-      '/workflow/cfmedip_hybrid.wdl'
+      '/TGL/gsi/data/iScan/cfMeDIP/workflow/cfmedip_hybrid.wdl'
+      #'run','/workflow/cfmedip_hybrid.wdl'
+      
       ]
 
 print(cmd)
