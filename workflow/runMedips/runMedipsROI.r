@@ -1,12 +1,11 @@
 library(docopt)
 
 doc <- "Usage:
-runMedipsROI.r --bamFile <FILE> --ROIFile <FILE> --outputDir <DIR> --threads <NUMBER>
-runMedipsROI.r --bamFile=FILE --ROIFile=FILE --outputDir=DIR --threads=NUMBER
+runMedipsROI.r --bamFile <FILE> --ROIFile <FILE> --outputDir <DIR>
+runMedipsROI.r --bamFile=FILE --ROIFile=FILE --outputDir=DIR
 --bamFile FILE       Aligned, sorted, filtered reads (bam) [default: ]
 --ROIFile FILE       Regions of interest, with columns: chr,start,end,name [default: ]
 --outputDir DIR      Path to output folder [default: ]
---threads NUMBER     Number of threads [default: 4]
 --help               Show this help text"
 opt <- docopt(doc)
 
