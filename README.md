@@ -29,6 +29,7 @@ Download the contents of the repository by executing `git clone https://github.c
 | --windowSize | Optional | MeDIPs window size parameter. Default = 200 |
 | --threads | Optional | Number of threads used by the aligner. Default = 4 |
 | --useMedestrand | Optional | Perform MeDEStrand analysis. Default = false |
+| --ROIFile | Optional | File with regions of interest for MeDIPs. Default = "/data/UCSC-hg38-CpG.bed" |
 
 [bowtie2]: https://github.com/BenLangmead/bowtie2/blob/master/README.md
 [bwa]: https://github.com/lh3/bwa/blob/master/README.md
