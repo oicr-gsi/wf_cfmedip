@@ -28,6 +28,8 @@ workflow cfmedip_hybrid {
     Int windowSize = 200
     Int threads = 4
     Int newReadLen = -1
+    Boolean useMedestrand = false
+    File ROIFile = "/data/UCSC-hg38-CpG.bed"
   }
   
   String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "")
@@ -126,7 +128,17 @@ workflow cfmedip_hybrid {
       bamDedup=removeDuplicates.bamDedup,
       fname=fname,
       outputPath=outputPath,
-      windowSize=windowSize
+      windowSize=windowSize,
+      ROIFile=ROIFile
+  }
+  
+    call runMedestrand.runMedestrand as runMedestrand{
+    input:
+      bamDedup=removeDuplicates.bamDedup,
+      fname=fname,
+      outputPath=outputPath,
+      windowSize=windowSize,
+      useMedestrand=useMedestrand
   }
 
 
