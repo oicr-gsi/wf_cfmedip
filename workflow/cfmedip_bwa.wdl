@@ -7,6 +7,7 @@ import "tasks/removeDuplicates.wdl" as removeDuplicates
 import "tasks/parseMethControl.wdl" as parseMethControl
 import "tasks/getBamMetrics.wdl" as getBamMetrics
 import "tasks/runMedips.wdl" as runMedips
+import "tasks/runMedestrand.wdl" as runMedestrand
 
 workflow cfmedip_bwa {
   input{
@@ -15,6 +16,7 @@ workflow cfmedip_bwa {
     File R1
     File R2
     File fasta
+    
     
     String? sampleName
     String patternUMI = "NNNNN"
@@ -25,6 +27,8 @@ workflow cfmedip_bwa {
     Int windowSize = 200
     Int threads = 4
     Int newReadLen = -1
+    Boolean useMedestrand = false
+    File ROIFile = "/data/UCSC-hg38-CpG.bed"
   }
   
   String fname=if defined(sampleName) then select_first([sampleName,""]) else sub(basename(R1),"(\.fq)?(\.fastq)?(\.gz)?", "")
@@ -93,7 +97,17 @@ workflow cfmedip_bwa {
       bamDedup=removeDuplicates.bamDedup,
       fname=fname,
       outputPath=outputPath,
-      windowSize=windowSize
+      windowSize=windowSize,
+      ROIFile=ROIFile
+  }
+  
+  call runMedestrand.runMedestrand as runMedestrand{
+    input:
+      bamDedup=removeDuplicates.bamDedup,
+      fname=fname,
+      outputPath=outputPath,
+      windowSize=windowSize,
+      useMedestrand=useMedestrand
   }
   
   

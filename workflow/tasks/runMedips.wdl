@@ -3,12 +3,14 @@ version 1.0
 task runMedips{
   input{
     File bamDedup
+    File ROIFile
     String fname
     String outputPath
     Int windowSize
   }
   
   String outMedips=outputPath+'/runMedips'
+  String ROIName=sub(basename(ROIFile),"(\.bed)?", "")
   
   command{
     mkdir -p ~{outMedips}
@@ -18,14 +20,19 @@ task runMedips{
     --outputDir ~{outMedips} \
     --windowSize ~{windowSize}
     
-    r /workflow/runMedips/runMedestrand.r \
+    r /workflow/runMedips/runMedipsROI.r \
     --bamFile ~{bamDedup} \
     --outputDir ~{outMedips} \
-    --windowSize ~{windowSize}
+    --ROIFile ~{ROIFIle}
+    
   }
   output{
     File medipsCount=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_count.txt.gz'
     File medipsRms=outMedips+'/MEDIPS_hg38_'+fname+'_ws'+windowSize+'_rms.txt.gz'
-    File medestrandWig=outMedips+'/MeDESTrand_hg38_'+fname+'_ws'+windowSize+'_wig.bed.gz'
+    File medipsROI=outMedips+'/'+fname+'_'+ROIName+'_CPM.RData'
   }
 }
+
+
+
+
