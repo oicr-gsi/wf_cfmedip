@@ -6,13 +6,13 @@ task runMedestrand{
     String fname
     String outputPath
     Int windowSize
-    Boolean runMedestrand
+    Boolean useMedestrand
   }
   
   String outMedips=outputPath+'/runMedips'
   
   command{
-  if [[ ~{useUMI} == true ]];then
+  if [[ ~{useMedestrand} == true ]];then
     mkdir -p ~{outMedips}
     r /workflow/runMedips/runMedestrand.r \
     --bamFile ~{bamDedup} \
