@@ -23,7 +23,7 @@ task runMedips{
     r /workflow/runMedips/runMedipsROI.r \
     --bamFile ~{bamDedup} \
     --outputDir ~{outMedips} \
-    --ROIFile ~{ROIFIle}
+    --ROIFile ~{ROIFile}
     
   }
   output{
