@@ -65,4 +65,6 @@ RUN echo "export PATH=$PATH:/usr/bin:/usr/local/bin:/usr/lib/bwa-0.7.17" >> /etc
 
 COPY workflow /workflow
 
+COPY data /data
+
 ENV PATH=/usr/lib/bwa-0.7.17:$PATH
