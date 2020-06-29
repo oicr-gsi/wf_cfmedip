@@ -14,15 +14,14 @@ task filterAlignments{
   String bracketClose="}"
   
   command{
-    samtools view -@ ~{threads} -b -F 260 ~{bamAligned} -o ~{outputPath}/~{fname}.~{aligner}.filter1.bam
-    
-    samtools view -@ ~{threads} ~{outputPath}/~{fname}.~{aligner}.filter1.bam \
+
+    samtools view -@ ~{bamAligned} \
     | awk 'sqrt($9*$9)>119 && sqrt($9*$9)<501' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt
     
     java -jar /usr/lib/picard.jar FilterSamReads \
-    I=~{outputPath}/~{fname}.~{aligner}.filter1.bam \
+    I=~{bamAligned} \
     O=~{outputPath}/~{fname}.~{aligner}.filter2.bam \
     READ_LIST_FILE=~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt \
     FILTER=includeReadList
