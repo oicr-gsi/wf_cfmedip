@@ -15,7 +15,7 @@ task filterAlignments{
   
   command{
 
-    samtools view -@ ~{bamAligned} \
+    samtools view -@ ~{threads} ~{bamAligned} \
     | awk 'sqrt($9*$9)>119 && sqrt($9*$9)<501' \
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt
