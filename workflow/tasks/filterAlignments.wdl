@@ -20,7 +20,7 @@ task filterAlignments{
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt
     
-    java -jar /usr/lib/picard.jar FilterSamReads \
+    java -Xmx$(echo '7*~{threads}' | bc)g -jar /usr/lib/picard.jar FilterSamReads \
     I=~{bamAligned} \
     O=~{outputPath}/~{fname}.~{aligner}.filter2.bam \
     READ_LIST_FILE=~{outputPath}/~{fname}.~{aligner}.filter1.mapped_proper_pair.txt \
@@ -31,7 +31,7 @@ task filterAlignments{
     | awk '~{bracketOpen}print $1~{bracketClose}' \
     > ~{outputPath}/~{fname}.~{aligner}.filter2.high_mismatch.txt
     
-    java -jar /usr/lib/picard.jar FilterSamReads \
+    java -Xmx$(echo '7*~{threads}' | bc)g -jar /usr/lib/picard.jar FilterSamReads \
     I=~{outputPath}/~{fname}.~{aligner}.filter2.bam \
     O=~{outputPath}/~{fname}.~{aligner}.filter3.bam \
     READ_LIST_FILe=~{outputPath}/~{fname}.~{aligner}.filter2.high_mismatch.txt \
