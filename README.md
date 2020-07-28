@@ -8,6 +8,10 @@ Workflow for cfMeDIP data analysis using Docker and WDL
 Download the pre-built image that is hosted in Docker Hub by executing `docker pull oicrgsi/wf_cfmedip`.
 
 **Option 2:**
+If you do not have root privileges, or are working on a HPC cluster, consider downloading [
+Singularity](https://sylabs.io/docs/) and downloading the pre-built image hosted in Docker Hub by executing: `singularity pull docker://oicrgsi/wf_cfmedip`
+
+**Option 3:**
 Download the contents of the repository by executing `git clone https://github.com/oicr-gsi/wf-cfMeDIP.git`, and then build the Docker image by running `docker build -t oicr-gsi/wf_cfmedip:latest wf-cfMeDIP/`; this process can take more than two hours.
 
 ## Workflow parameters
@@ -72,6 +76,15 @@ docker run --rm -it -u $(id -u):$(id -g) \
 	-v /storage/cromwell:/cromwell \
 	-v /storage/MyStudy:/data \
 	oicrgsi/wf_cfmedip /data/output/sample001/run_inside_container.sh
+```
+
+The equivalent Singularity command to run the pipeline and execute the instructions contained in the file `run_inside_container.sh`:  
+```
+singularity run \
+  -B /pathway/to/storage/cromwell/:/cromwell \ 
+  -B /pathway/to/MyStudy:/data \
+  oicrgsi/wf_cfmedip /data/output/sample001/run_inside_container.sh \
+  wf_cfmedip_latest.sif
 ```
 
 **Do not use sudo to execute `docker` commands**, instead, add an existing user to the _docker_ group `sudo usermod -aG docker myuser`, which grants this user permissions to execute the `docker` command (i.e. `docker image ls`, `docker run`, `docker build`, etc).
