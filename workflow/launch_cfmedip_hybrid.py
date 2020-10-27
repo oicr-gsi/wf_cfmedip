@@ -86,9 +86,7 @@ with open(outputPath+'/cfmedip_hybrid.inputs.json', 'w') as json_file:
 cmd = ['java','-Xmx1g','-Duser.dir=/cromwell','-jar','/usr/lib/cromwell.jar',
       'run',
       '-i',outputPath+'/cfmedip_hybrid.inputs.json',
-      '/TGL/gsi/data/iScan/cfMeDIP/workflow/cfmedip_hybrid.wdl'
-      #'run','/workflow/cfmedip_hybrid.wdl'
-      
+      '/workflow/cfmedip_hybrid.wdl'
       ]
 
 print(cmd)
