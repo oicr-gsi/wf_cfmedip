@@ -41,6 +41,9 @@ Download the contents of the repository by executing `git clone https://github.c
 [UMI-tools extract]: https://umi-tools.readthedocs.io/en/latest/reference/extract.html
 [fastp]: https://github.com/OpenGene/fastp/blob/master/README.md#all-options
 
+## Deep and shallow sequencing runs (read trimming)
+Some laboratories perform a preliminary shallow sequencing run for QC purposes (i.e. MiSeq run) prior performing full depth sequencing (i.e. NovaSeq). If necessary, the option --newReadLen adds a trimming step to reduce the size of the reads from the QC run and ensure that the metrics of the deep and shallow runs are comparable. 
+
 ## Example
 File structure containing the elements required by the workflow:
 ```
