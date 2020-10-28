@@ -19,7 +19,7 @@ Download the contents of the repository by executing `git clone https://github.c
 | --- | --- | --- |
 | --R1  | Required | fastq file mate 1 (.gz allowed) |
 | --R2  | Required | fastq file mate 2 (.gz allowed) |
-| --aligner | Required | [bowtie2] or [bwa] (using bwa mem) or [magic-blast] |
+| --aligner | Required | [bwa] (using bwa mem); [bowtie2] or [magic-blast] are experimental|
 | --index | Required | genomic index pre-built for the selected aligner |
 | --fasta | Required | reference genomic sequence in fasta format |
 | --outputPath | Required | output folder |
@@ -57,7 +57,7 @@ File structure containing the elements required by the workflow:
 			|sample001
 				|run_inside_container.sh
 		|index
-			|bowtie2
+			|bwa
 				|ucsc.hg38_F19K16_F24B22
 					|ucsc.hg38_F19K16_F24B22
 			|fasta
